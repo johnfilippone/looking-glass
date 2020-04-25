@@ -1,0 +1,6 @@
+.menu-container {
+  border-right: 1px solid black;
+  background-color: #282c34;
+  grid-column: 1;
+  grid-row: 1;
+}
