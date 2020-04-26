@@ -2,25 +2,26 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
+/react/node_modules
+/react/.pnp
+/react.pnp.js
 
 # testing
-/coverage
+/react/coverage
 
 # production
-/build
+/react/build
 
 # misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+/react.DS_Store
+/react/.env.local
+/react/.env.development.local
+/react/.env.test.local
+/react/.env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+/react/npm-debug.log*
+/react/yarn-debug.log*
+/react/yarn-error.log*
 
 # google sheets api
 credentials.json
