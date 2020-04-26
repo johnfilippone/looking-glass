@@ -1,0 +1,7 @@
+.add-table {
+  text-align: right;
+  font-size: calc(10px + .75vmin);
+  color: white;
+  padding: 6px;
+  border-bottom: 1px solid black;
+}
