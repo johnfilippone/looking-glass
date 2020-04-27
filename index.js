@@ -2,6 +2,9 @@ const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
 
+const express = require('express');
+const { ApolloServer, gql } = require('apollo-server-express');
+
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -15,6 +18,29 @@ fs.readFile('credentials.json', (err, content) => {
   // Authorize a client with credentials, then call the Google Sheets API.
   authorize(JSON.parse(content), listMajors);
 });
+
+const typeDefs = gql`
+  type Query {
+    tables: [[String!]!]
+  }
+`;
+const resolvers = {
+  Query: {
+    tables: () => [
+        ["Body Weight", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Weight"],
+        ["Body Measurments", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Girth"]
+    ]
+  },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+
+const app = express();
+server.applyMiddleware({ app });
+
+app.listen({ port: 4000 }, () =>
+  console.log('Now browse to http://localhost:4000' + server.graphqlPath)
+);
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -74,17 +100,18 @@ function getNewToken(oAuth2Client, callback) {
 function listMajors(auth) {
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
-    spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Class Data!A2:E',
+    spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
+    //spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+    range: 'Weight!A2:B',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
-      console.log('Name, Major:');
+      console.log('Found data');
       // Print columns A and E, which correspond to indices 0 and 4.
-      rows.map((row) => {
-        console.log(`${row[0]}, ${row[4]}`);
-      });
+      //rows.map((row) => {
+        //console.log(`${row[0]}, ${row[1]}`);
+      //});
     } else {
       console.log('No data found.');
     }
