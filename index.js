@@ -13,24 +13,27 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 const TOKEN_PATH = 'token.json';
 
 // Load client secrets from a local file.
+let auth = null;
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Sheets API.
-  authorize(JSON.parse(content), listMajors);
+  authorize(JSON.parse(content), getBodyWeight);
 });
 
 const typeDefs = gql`
-  type Query {
-    tables: [[String!]!]
-  }
+    type Query {
+        weight: [[String!]!]
+        tables: [[String!]!]
+    }
 `;
 const resolvers = {
-  Query: {
-    tables: () => [
-        ["Body Weight", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Weight"],
-        ["Body Measurments", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Girth"]
-    ]
-  },
+    Query: {
+        weight: () => {return getBodyWeight(auth);},
+        tables: () => [
+            ["Body Weight", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Weight"],
+            ["Body Measurments", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Girth"]
+        ]
+    },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
@@ -57,6 +60,7 @@ function authorize(credentials, callback) {
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) return getNewToken(oAuth2Client, callback);
     oAuth2Client.setCredentials(JSON.parse(token));
+    auth = oAuth2Client;
     callback(oAuth2Client);
   });
 }
@@ -97,25 +101,23 @@ function getNewToken(oAuth2Client, callback) {
  * @see https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
-function listMajors(auth) {
-  const sheets = google.sheets({version: 'v4', auth});
-  sheets.spreadsheets.values.get({
-    spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
-    //spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Weight',
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
-    const rows = res.data.values;
-    if (rows.length) {
-      console.log('Found data');
-      // Print columns A and E, which correspond to indices 0 and 4.
-      /*
-      rows.map((row) => {
-        console.log(`${row[0]}, ${row[1]}`);
-      });
-      */
-    } else {
-      console.log('No data found.');
-    }
-  });
+async function getBodyWeight(auth) {
+    const sheets = google.sheets({version: 'v4', auth});
+    const sheetPromise = new Promise((resolve, reject) => {
+        sheets.spreadsheets.values.get({
+            spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
+            range: 'Weight',
+        }, (err, res) => {
+            if (err) return reject('The API returned an error: ' + err);
+            const rows = res.data.values;
+            if (rows.length) {
+                console.log('Found data');
+                resolve(rows);
+            } else {
+                resolve('No data found.');
+            }
+        });
+    });
+
+    return await sheetPromise;
 }

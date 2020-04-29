@@ -52,5 +52,3 @@ function ContextMenu(props: any) {
 }
 
 export default ContextMenu;
-
-

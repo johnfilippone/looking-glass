@@ -4,7 +4,4 @@
   min-height: 100vh;
   font-size: calc(10px + 2vmin);
   color: white;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 20px);
-  grid-template-rows: repeat(auto-fill, 20px);
 }
