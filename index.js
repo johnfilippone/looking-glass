@@ -102,16 +102,18 @@ function listMajors(auth) {
   sheets.spreadsheets.values.get({
     spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
     //spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Weight!A2:B',
+    range: 'Weight',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
       console.log('Found data');
       // Print columns A and E, which correspond to indices 0 and 4.
-      //rows.map((row) => {
-        //console.log(`${row[0]}, ${row[1]}`);
-      //});
+      /*
+      rows.map((row) => {
+        console.log(`${row[0]}, ${row[1]}`);
+      });
+      */
     } else {
       console.log('No data found.');
     }

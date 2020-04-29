@@ -1,13 +1,11 @@
 import React from 'react';
 import './App.css';
-import MainMenu from './components/MainMenu';
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
     <div className="App">
-        <div className="left-side-bar">
-          <MainMenu />
-        </div>
+      <Dashboard />
     </div>
   );
 }

@@ -1,0 +1,14 @@
+.ContextMenu {
+    border: 2px solid black;
+    position: absolute;
+    background-color: #16181d;
+    text-align: left;
+}
+.ContextMenu ul {
+    margin: 0;
+    padding: 0;
+}
+.ContextMenu ul li {
+    list-style: none;
+    border-bottom: 1px solid black;
+}
