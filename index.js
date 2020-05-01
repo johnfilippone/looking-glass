@@ -22,12 +22,14 @@ fs.readFile('credentials.json', (err, content) => {
 
 const typeDefs = gql`
     type Query {
+        connecting: [[String!]!]
         weight: [[String!]!]
         tables: [[String!]!]
     }
 `;
 const resolvers = {
     Query: {
+        connecting: () => {return getConnectingData(auth);},
         weight: () => {return getBodyWeight(auth);},
         tables: () => [
             ["Body Weight", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Weight"],
@@ -106,7 +108,28 @@ async function getBodyWeight(auth) {
     const sheetPromise = new Promise((resolve, reject) => {
         sheets.spreadsheets.values.get({
             spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
-            range: 'Weight',
+            range: 'Metrics',
+        }, (err, res) => {
+            if (err) return reject('The API returned an error: ' + err);
+            const rows = res.data.values;
+            if (rows.length) {
+                console.log('Found data');
+                resolve(rows);
+            } else {
+                resolve('No data found.');
+            }
+        });
+    });
+
+    return await sheetPromise;
+}
+
+async function getConnectingData(auth) {
+    const sheets = google.sheets({version: 'v4', auth});
+    const sheetPromise = new Promise((resolve, reject) => {
+        sheets.spreadsheets.values.get({
+            spreadsheetId: '1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw',
+            range: 'Connecting Volume',
         }, (err, res) => {
             if (err) return reject('The API returned an error: ' + err);
             const rows = res.data.values;

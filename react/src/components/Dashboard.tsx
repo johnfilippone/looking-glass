@@ -10,31 +10,55 @@ class Dashboard extends React.Component<any, any> {
         this.state = {
             contextMenuActive: false,
             contextMenuClickPosition: { xPosition: 0, yPosition: 0 },
-            weightData: {dates: [], lbs: []}
+            weightData: {dates: [], lbs: []},
+            connectingData: {dates: [], avgDbs: [], maxDbs: []}
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
         this.getClickPosition = this.getClickPosition.bind(this);
         this.getWeightData = this.getWeightData.bind(this);
+        this.getConnectingData = this.getConnectingData.bind(this);
     }
 
     componentDidMount() {
         this.getWeightData();
+        this.getConnectingData();
     }
 
     getWeightData() {
         request('http://localhost:4000/graphql', `{ weight }`).then(data => {
-            let dates = data.weight.slice(1).filter((data: any) => {
+            let dates = data.weight.slice(3).filter((data: any) => {
                 return data[1];
             }).map((data: any) => {
                 return data[0];
             });
-            let lbs = data.weight.slice(1).filter((data: any) => {
+            let lbs = data.weight.slice(3).filter((data: any) => {
                 return data[1];
             }).map((data: any) => {
                 return parseFloat(data[1]);
             });
             this.setState({ weightData: {dates, lbs }});
+        });
+    }
+
+    getConnectingData() {
+        request('http://localhost:4000/graphql', `{ connecting }`).then(data => {
+            let dates = data.connecting.slice(1).filter((data: any) => {
+                return data[7] && data[8];
+            }).map((data: any) => {
+                return data[0];
+            });
+            let avgDbs = data.connecting.slice(1).filter((data: any) => {
+                return data[7] && data[8];
+            }).map((data: any) => {
+                return parseFloat(data[7]);
+            });
+            let maxDbs = data.connecting.slice(1).filter((data: any) => {
+                return data[7] && data[8];
+            }).map((data: any) => {
+                return parseFloat(data[8]);
+            });
+            this.setState({ connectingData: {dates, avgDbs, maxDbs }});
         });
     }
 
@@ -64,10 +88,11 @@ class Dashboard extends React.Component<any, any> {
 
     render() {
         const weightData = this.state.weightData;
-        const data = {
+        const connectingData = this.state.connectingData;
+        const weightChartData = {
             labels: weightData.dates,
             datasets: [{
-                label: 'My First dataset',
+                label: 'Body Weight (lbs)',
                 fill: false,
                 lineTension: 0.1,
                 backgroundColor: 'rgba(75,192,192,0.4)',
@@ -88,9 +113,57 @@ class Dashboard extends React.Component<any, any> {
                 data: weightData.lbs
             }]
         };
+        const connectingChartData = {
+            labels: connectingData.dates,
+            datasets: [
+                {
+                    label: 'Max dbs',
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'rgba(75,192,192,0.4)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'rgba(75,192,192,1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                    pointHoverBorderColor: 'rgba(220,220,220,1)',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: connectingData.maxDbs
+                },
+                {
+                    label: 'Avg dbs',
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'rgba(75,192,192,0.4)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'rgba(75,192,192,1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                    pointHoverBorderColor: 'rgba(220,220,220,1)',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: connectingData.avgDbs
+                }
+            ]
+        };
         return (
             <div className="Dashboard" onContextMenu={this.toggleContextMenu}>
-                <Line data={data} />
+                <Line data={weightChartData} />
+                <Line data={connectingChartData} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
