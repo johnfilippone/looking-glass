@@ -24,5 +24,5 @@
 /react/yarn-error.log*
 
 # google sheets api
-credentials.json
+/config/credentials.json
 token.json

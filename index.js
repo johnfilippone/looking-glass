@@ -1,24 +1,11 @@
-const fs = require('fs');
-const readline = require('readline');
-const {google} = require('googleapis');
+'use strict'
 
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
+import express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
+import SheetsOperatorFactory from './sheets/sheets-operator-factory';
 
-// If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = 'token.json';
-
-// Load client secrets from a local file.
-let auth = null;
-fs.readFile('credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  // Authorize a client with credentials, then call the Google Sheets API.
-  authorize(JSON.parse(content), getBodyWeight);
-});
+const sheetsOperatorFactory = new SheetsOperatorFactory('config/credentials.json');
+const sheetsOperator = sheetsOperatorFactory.create();
 
 const typeDefs = gql`
     type Query {
@@ -29,11 +16,13 @@ const typeDefs = gql`
 `;
 const resolvers = {
     Query: {
-        connecting: () => {return getConnectingData(auth);},
-        weight: () => {return getBodyWeight(auth);},
+        connecting: async () => {return await sheetsOperator.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Connecting Volume');},
+        weight: async () => {return await sheetsOperator.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics');},
+        //connecting: () => {return getConnectingData(auth);},
+        //weight: () => {return getBodyWeight(auth);},
         tables: () => [
-            ["Body Weight", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Weight"],
-            ["Body Measurments", "1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", "Girth"]
+            ['Body Weight', '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Weight'],
+            ['Body Measurments', '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Girth']
         ]
     },
 };
@@ -47,100 +36,3 @@ app.listen({ port: 4000 }, () =>
   console.log('Now browse to http://localhost:4000' + server.graphqlPath)
 );
 
-/**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
-function authorize(credentials, callback) {
-  const {client_secret, client_id, redirect_uris} = credentials.web;
-  const oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
-
-  // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    auth = oAuth2Client;
-    callback(oAuth2Client);
-  });
-}
-
-/**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
- */
-function getNewToken(oAuth2Client, callback) {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES,
-  });
-  console.log('Authorize this app by visiting this url:', authUrl);
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  rl.question('Enter the code from that page here: ', (code) => {
-    rl.close();
-    oAuth2Client.getToken(code, (err, token) => {
-      if (err) return console.error('Error while trying to retrieve access token', err);
-      oAuth2Client.setCredentials(token);
-      // Store the token to disk for later program executions
-      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-        if (err) return console.error(err);
-        console.log('Token stored to', TOKEN_PATH);
-      });
-      callback(oAuth2Client);
-    });
-  });
-}
-
-/**
- * Prints the names and majors of students in a sample spreadsheet:
- * @see https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
- * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
- */
-async function getBodyWeight(auth) {
-    const sheets = google.sheets({version: 'v4', auth});
-    const sheetPromise = new Promise((resolve, reject) => {
-        sheets.spreadsheets.values.get({
-            spreadsheetId: '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ',
-            range: 'Metrics',
-        }, (err, res) => {
-            if (err) return reject('The API returned an error: ' + err);
-            const rows = res.data.values;
-            if (rows.length) {
-                console.log('Found data');
-                resolve(rows);
-            } else {
-                resolve('No data found.');
-            }
-        });
-    });
-
-    return await sheetPromise;
-}
-
-async function getConnectingData(auth) {
-    const sheets = google.sheets({version: 'v4', auth});
-    const sheetPromise = new Promise((resolve, reject) => {
-        sheets.spreadsheets.values.get({
-            spreadsheetId: '1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw',
-            range: 'Connecting Volume',
-        }, (err, res) => {
-            if (err) return reject('The API returned an error: ' + err);
-            const rows = res.data.values;
-            if (rows.length) {
-                console.log('Found data');
-                resolve(rows);
-            } else {
-                resolve('No data found.');
-            }
-        });
-    });
-
-    return await sheetPromise;
-}
