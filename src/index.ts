@@ -4,13 +4,17 @@
 import getLogger from './logger';
 const logger = getLogger();
 
+// Config
+import loadConfig from './config';
+const config = loadConfig();
+
 // Graphql
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 
 // Google Sheets API interface
 import SheetsOperatorFactory from './sheets/sheets-operator-factory';
-const sheetsOperatorFactory = new SheetsOperatorFactory(logger, 'config/credentials.json');
+const sheetsOperatorFactory = new SheetsOperatorFactory(logger, config.sheets);
 const sheetsOperator = sheetsOperatorFactory.create();
 
 const typeDefs = gql`

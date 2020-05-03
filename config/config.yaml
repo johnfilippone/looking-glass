@@ -1,0 +1,3 @@
+sheets:
+    credentialsPath: config/sheets/credentials.json
+    tokenPath: config/sheets/token.json

@@ -4,14 +4,14 @@ import SheetsOperator from './sheets-operator';
 
 class SheetsOperatorFactory {
     _logger: any
-    _credentialsPath: any
-    constructor(logger, credentialsPath) {
+    _config: any
+    constructor(logger, config) {
         this._logger = logger;
-        this._credentialsPath = credentialsPath;
+        this._config = config;
     }
 
-    create() {
-        return new SheetsOperator(this._logger, this._credentialsPath);
+    create(logger=this._logger, config=this._config) {
+        return new SheetsOperator(logger, config);
     }
 }
 

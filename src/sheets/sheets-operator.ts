@@ -7,20 +7,15 @@ import { google } from 'googleapis';
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = 'config/token.json';
-
 // Responsible for communicating with the Google Sheets API
 class SheetsOperator {
     _auth: any
     _logger: any
-    _credentialsPath: any
-    constructor(logger, credentialsPath) {
+    _config: any
+    constructor(logger, config) {
         this._auth = null;
         this._logger = logger;
-        this._credentialsPath = credentialsPath;
+        this._config = config;
     }
 
     async getSheet(spreadsheetId, range) {
@@ -36,15 +31,14 @@ class SheetsOperator {
 
     async connect() {
         try {
-            const credentials = JSON.parse(fs.readFileSync(this._credentialsPath).toString());
+            const credentials = JSON.parse(fs.readFileSync(this._config.credentialsPath).toString());
             const {client_secret, client_id, redirect_uris} = credentials.web;
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
             let token = null;
-            if (fs.existsSync(TOKEN_PATH)) {
-                token = JSON.parse(fs.readFileSync(TOKEN_PATH).toString());
+            if (fs.existsSync(this._config.tokenPath)) {
+                token = JSON.parse(fs.readFileSync(this._config.tokenPath).toString());
             } else {
-                logger.info('get token');
                 token = await this._getNewToken(oAuth2Client);
             }
             if (!token) throw new Error('null token');
@@ -53,7 +47,7 @@ class SheetsOperator {
             this._auth = oAuth2Client;
 
         } catch(err) {
-            logger.error(err);
+            this._logger.error(err);
             process.exit(1);
         }
     }
@@ -63,7 +57,7 @@ class SheetsOperator {
             access_type: 'offline',
             scope: SCOPES,
         });
-        logger.info('Authorize this app by visiting this url:', authUrl);
+        this._logger.info('Authorize this app by visiting this url: ' + authUrl);
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
@@ -78,8 +72,8 @@ class SheetsOperator {
                     }
 
                     // Store the token to disk for later program executions
-                    fs.writeFileSync(TOKEN_PATH, JSON.stringify(token));
-                    logger.info('Token stored to', TOKEN_PATH);
+                    fs.writeFileSync(this._config.tokenPath, JSON.stringify(token));
+                    this._logger.info('Token stored to ' + this._config.tokenPath);
 
                     return resolve(token);
                 });
