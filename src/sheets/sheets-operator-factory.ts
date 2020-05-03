@@ -3,6 +3,7 @@
 import SheetsOperator from './sheets-operator';
 
 class SheetsOperatorFactory {
+    _credentialsPath: any
     constructor(credentialsPath) {
         this._credentialsPath = credentialsPath;
     }

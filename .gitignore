@@ -26,3 +26,6 @@
 # google sheets api
 /config/credentials.json
 token.json
+
+# backend
+/build

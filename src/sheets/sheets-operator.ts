@@ -18,6 +18,8 @@ const TOKEN_PATH = 'token.json';
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
+/*
+let auth = null;
 function authorize(credentials, callback) {
   const {client_secret, client_id, redirect_uris} = credentials.web;
   const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
@@ -30,6 +32,7 @@ function authorize(credentials, callback) {
     callback(oAuth2Client);
   });
 }
+*/
 
 /**
  * Get and store new token after prompting for user authorization, and then
@@ -109,15 +112,19 @@ async function getConnectingData(auth) {
     return await sheetPromise;
 }
 
+
 // Responsible for communicating with the Google Sheets API
 class SheetsOperator {
+    _auth: any
+    _credentialsPath: any
     constructor(credentialsPath) {
-        this._credentialsPath = credentialsPath;
         this._auth = null;
+        this._credentialsPath = credentialsPath;
     }
 
     async getSheet(spreadsheetId, range) {
-        const sheets = google.sheets({version: 'v4', this._auth});
+        const auth = this._auth;
+        const sheets = google.sheets({version: 'v4', auth});
         return new Promise((resolve, reject) => {
             sheets.spreadsheets.values.get({ spreadsheetId, range }, (err, res) => {
                 if (err) return reject('The API returned an error: ' + err);
@@ -128,14 +135,13 @@ class SheetsOperator {
 
     async connect() {
         try {
-            const rawCredentials = fs.readFileSync(this._credentialsPath);
-            const credentials = JSON.parse(rawCredentials);
+            const credentials = JSON.parse(fs.readFileSync(this._credentialsPath).toString());
             const {client_secret, client_id, redirect_uris} = credentials.web;
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
             let token = null;
             if (fs.existsSync(TOKEN_PATH)) {
-                token = JSON.parse(fs.readFileSync(TOKEN_PATH));
+                token = JSON.parse(fs.readFileSync(TOKEN_PATH).toString());
             } else {
                 token = await this._getNewToken(oAuth2Client);
             }
@@ -160,7 +166,7 @@ class SheetsOperator {
             output: process.stdout,
         });
 
-        return questionPromise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             rl.question('Enter the code from that page here: ', (code) => {
                 rl.close();
                 oAuth2Client.getToken(code, (err, token) => {
