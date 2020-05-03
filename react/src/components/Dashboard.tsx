@@ -2,6 +2,7 @@ import React from 'react';
 import './Dashboard.css';
 import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
+import Streak from './Streak';
 import { Line } from 'react-chartjs-2';
 import { request } from 'graphql-request'
 
@@ -11,56 +12,26 @@ class Dashboard extends React.Component<any, any> {
         this.state = {
             contextMenuActive: false,
             contextMenuClickPosition: { xPosition: 0, yPosition: 0 },
-            weightData: {dates: [], lbs: []},
-            connectingData: {dates: [], avgDbs: [], maxDbs: []}
+            weightData: [],
+            connectingData: []
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
         this.getClickPosition = this.getClickPosition.bind(this);
-        this.getWeightData = this.getWeightData.bind(this);
-        this.getConnectingData = this.getConnectingData.bind(this);
+        this.getSheet = this.getSheet.bind(this);
     }
 
-    componentDidMount() {
-        this.getWeightData();
-        this.getConnectingData();
-    }
-
-    getWeightData() {
-        request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", range:"Metrics") }`).then(data => {
-            let dates = data.sheets.slice(3).filter((data: any) => {
-                return data[1];
-            }).map((data: any) => {
-                return data[0];
-            });
-            let lbs = data.sheets.slice(3).filter((data: any) => {
-                return data[1];
-            }).map((data: any) => {
-                return parseFloat(data[1]);
-            });
-            this.setState({ weightData: {dates, lbs }});
+    async componentDidMount() {
+        const weightData = await this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics')
+        const connectingData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume');
+        this.setState({
+            weightData: weightData.sheets,
+            connectingData: connectingData.sheets
         });
     }
 
-    getConnectingData() {
-        request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw", range:"Connecting Volume")}`).then(data => {
-            let dates = data.sheets.slice(1).filter((data: any) => {
-                return data[7] && data[8];
-            }).map((data: any) => {
-                return data[0];
-            });
-            let avgDbs = data.sheets.slice(1).filter((data: any) => {
-                return data[7] && data[8];
-            }).map((data: any) => {
-                return parseFloat(data[7]);
-            });
-            let maxDbs = data.sheets.slice(1).filter((data: any) => {
-                return data[7] && data[8];
-            }).map((data: any) => {
-                return parseFloat(data[8]);
-            });
-            this.setState({ connectingData: {dates, avgDbs, maxDbs }});
-        });
+    async getSheet(spreadsheetId: any, range: any) {
+        return request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"${spreadsheetId}", range:"${range}") }`);
     }
 
     toggleContextMenu(e: any) {
@@ -88,10 +59,11 @@ class Dashboard extends React.Component<any, any> {
     }
 
     render() {
-        const weightData = this.state.weightData;
-        const connectingData = this.state.connectingData;
+        let weightData = this.state.weightData;
+        let connectingData = this.state.connectingData;
+
         const weightChartData = {
-            labels: weightData.dates,
+            labels: weightData.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; }),
             datasets: [{
                 label: 'Body Weight (lbs)',
                 fill: false,
@@ -111,11 +83,11 @@ class Dashboard extends React.Component<any, any> {
                 pointHoverBorderWidth: 2,
                 pointRadius: 1,
                 pointHitRadius: 10,
-                data: weightData.lbs
+                data: weightData.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })
             }]
         };
         const connectingChartData = {
-            labels: connectingData.dates,
+            labels: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; }),
             datasets: [
                 {
                     label: 'Max dbs',
@@ -136,7 +108,7 @@ class Dashboard extends React.Component<any, any> {
                     pointHoverBorderWidth: 2,
                     pointRadius: 1,
                     pointHitRadius: 10,
-                    data: connectingData.maxDbs
+                    data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })
                 },
                 {
                     label: 'Avg dbs',
@@ -157,7 +129,7 @@ class Dashboard extends React.Component<any, any> {
                     pointHoverBorderWidth: 2,
                     pointRadius: 1,
                     pointHitRadius: 10,
-                    data: connectingData.avgDbs
+                    data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })
                 }
             ]
         };
@@ -165,6 +137,8 @@ class Dashboard extends React.Component<any, any> {
             <div className="Dashboard" onContextMenu={this.toggleContextMenu}>
                 <Countdown title="Days until TX" date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                 <Countdown title="Days to End of Diet" date={Date.parse('21 June 2020 00:00:00 GMT')} />
+                <Streak title="Study Streak" streak={45} retroNumerator={94} retroDenominator={100} />
+                <Streak title="KTVA Streak" streak={45} retroNumerator={94} retroDenominator={100} />
                 <Line data={weightChartData} />
                 <Line data={connectingChartData} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />

@@ -1,0 +1,18 @@
+.Streak {
+    height: 200px;
+    width: 200px;
+    margin: 30px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.streak-title {
+    font-size: 18px;
+}
+.streak-number {
+    font-size: 72px;
+}
+.streak-retro {
+    font-size: 24px;
+}
