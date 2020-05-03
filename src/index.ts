@@ -13,27 +13,25 @@ import SheetsOperatorFactory from './sheets/sheets-operator-factory';
 const sheetsOperatorFactory = new SheetsOperatorFactory(logger, config.sheets);
 const sheetsOperator = sheetsOperatorFactory.create();
 
+// Web Server
+import GraphQLServiceFactory from './graphql/graphql-service-factory';
+const graphQLServiceFactory = new GraphQLServiceFactory(logger, config.graphql, sheetsOperator);
+const graphQLService = graphQLServiceFactory.create();
+graphQLService.start();
+
+/*
 // Graphql
 import { ApolloServer, gql } from 'apollo-server-express';
 const typeDefs = gql`
     type Query {
-        connecting: [[String!]!]
-        weight: [[String!]!]
-        tables: [[String!]!]
+        sheets(spreadsheetId: String!, range: String!): [[String!]!]
     }
 `;
 const resolvers = {
     Query: {
-        connecting: async () => {
-            return await sheetsOperator.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume');
-        },
-        weight: async () => {
-            return await sheetsOperator.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics');
-        },
-        tables: () => [
-            ['Body Weight', '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Weight'],
-            ['Body Measurments', '1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Girth']
-        ]
+        sheets: async (obj, args) => {
+            return await sheetsOperator.getSheet(args.spreadsheetId, args.range);
+        }
     },
 };
 const graphQLServer = new ApolloServer({ typeDefs, resolvers });
@@ -48,3 +46,4 @@ app.listen({ port: 4000 }, () => {
     logger.info('Now browse to http://localhost:4000' + graphQLServer.graphqlPath)
     sheetsOperator.connect();
 });
+*/

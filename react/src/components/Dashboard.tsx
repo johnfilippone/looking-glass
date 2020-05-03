@@ -26,13 +26,13 @@ class Dashboard extends React.Component<any, any> {
     }
 
     getWeightData() {
-        request('http://localhost:4000/graphql', `{ weight }`).then(data => {
-            let dates = data.weight.slice(3).filter((data: any) => {
+        request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ", range:"Metrics") }`).then(data => {
+            let dates = data.sheets.slice(3).filter((data: any) => {
                 return data[1];
             }).map((data: any) => {
                 return data[0];
             });
-            let lbs = data.weight.slice(3).filter((data: any) => {
+            let lbs = data.sheets.slice(3).filter((data: any) => {
                 return data[1];
             }).map((data: any) => {
                 return parseFloat(data[1]);
@@ -42,18 +42,18 @@ class Dashboard extends React.Component<any, any> {
     }
 
     getConnectingData() {
-        request('http://localhost:4000/graphql', `{ connecting }`).then(data => {
-            let dates = data.connecting.slice(1).filter((data: any) => {
+        request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw", range:"Connecting Volume")}`).then(data => {
+            let dates = data.sheets.slice(1).filter((data: any) => {
                 return data[7] && data[8];
             }).map((data: any) => {
                 return data[0];
             });
-            let avgDbs = data.connecting.slice(1).filter((data: any) => {
+            let avgDbs = data.sheets.slice(1).filter((data: any) => {
                 return data[7] && data[8];
             }).map((data: any) => {
                 return parseFloat(data[7]);
             });
-            let maxDbs = data.connecting.slice(1).filter((data: any) => {
+            let maxDbs = data.sheets.slice(1).filter((data: any) => {
                 return data[7] && data[8];
             }).map((data: any) => {
                 return parseFloat(data[8]);

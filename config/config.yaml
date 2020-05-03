@@ -1,3 +1,5 @@
+graphql:
+    port: 4000
 sheets:
     credentialsPath: config/sheets/credentials.json
     tokenPath: config/sheets/token.json
