@@ -1,10 +1,16 @@
 'use strict'
 
+// Logger
+import getLogger from './logger';
+const logger = getLogger();
+
+// Graphql
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
-import SheetsOperatorFactory from './sheets/sheets-operator-factory';
 
-const sheetsOperatorFactory = new SheetsOperatorFactory('config/credentials.json');
+// Google Sheets API interface
+import SheetsOperatorFactory from './sheets/sheets-operator-factory';
+const sheetsOperatorFactory = new SheetsOperatorFactory(logger, 'config/credentials.json');
 const sheetsOperator = sheetsOperatorFactory.create();
 
 const typeDefs = gql`
@@ -26,13 +32,11 @@ const resolvers = {
         ]
     },
 };
-
 const server = new ApolloServer({ typeDefs, resolvers });
-
 const app = express();
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () => {
-    console.log('Now browse to http://localhost:4000' + server.graphqlPath)
+    logger.info('Now browse to http://localhost:4000' + server.graphqlPath)
     sheetsOperator.connect();
 });

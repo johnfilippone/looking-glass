@@ -15,9 +15,11 @@ const TOKEN_PATH = 'config/token.json';
 // Responsible for communicating with the Google Sheets API
 class SheetsOperator {
     _auth: any
+    _logger: any
     _credentialsPath: any
-    constructor(credentialsPath) {
+    constructor(logger, credentialsPath) {
         this._auth = null;
+        this._logger = logger;
         this._credentialsPath = credentialsPath;
     }
 
@@ -42,7 +44,7 @@ class SheetsOperator {
             if (fs.existsSync(TOKEN_PATH)) {
                 token = JSON.parse(fs.readFileSync(TOKEN_PATH).toString());
             } else {
-                console.log('get token');
+                logger.info('get token');
                 token = await this._getNewToken(oAuth2Client);
             }
             if (!token) throw new Error('null token');
@@ -51,7 +53,7 @@ class SheetsOperator {
             this._auth = oAuth2Client;
 
         } catch(err) {
-            console.error(err);
+            logger.error(err);
             process.exit(1);
         }
     }
@@ -61,7 +63,7 @@ class SheetsOperator {
             access_type: 'offline',
             scope: SCOPES,
         });
-        console.log('Authorize this app by visiting this url:', authUrl);
+        logger.info('Authorize this app by visiting this url:', authUrl);
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
@@ -77,7 +79,7 @@ class SheetsOperator {
 
                     // Store the token to disk for later program executions
                     fs.writeFileSync(TOKEN_PATH, JSON.stringify(token));
-                    console.log('Token stored to', TOKEN_PATH);
+                    logger.info('Token stored to', TOKEN_PATH);
 
                     return resolve(token);
                 });
