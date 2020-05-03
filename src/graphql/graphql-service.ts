@@ -7,11 +7,11 @@ import morgan from 'morgan';
 class GraphQLService {
     _logger: any
     _config: any
-    _sheetsOperator: any
-    constructor(logger, config, sheetsOperator) {
+    _sheetsService: any
+    constructor(logger, config, sheetsService) {
         this._logger = logger;
         this._config = config;
-        this._sheetsOperator = sheetsOperator;
+        this._sheetsService = sheetsService;
     }
 
     start() {
@@ -23,7 +23,7 @@ class GraphQLService {
         const resolvers = {
             Query: {
                 sheets: async (obj, args) => {
-                    return await this._sheetsOperator.getSheet(args.spreadsheetId, args.range);
+                    return await this._sheetsService.getSheet(args.spreadsheetId, args.range);
                 }
             },
         };
@@ -34,7 +34,7 @@ class GraphQLService {
         graphQLServer.applyMiddleware({ app });
         app.listen({ port: this._config.port }, () => {
             this._logger.info('Serving graphql at http://localhost:4000' + graphQLServer.graphqlPath)
-            this._sheetsOperator.connect();
+            this._sheetsService.connect();
         });
     }
 }

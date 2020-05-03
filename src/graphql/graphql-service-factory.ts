@@ -5,15 +5,15 @@ import GraphQLService from './graphql-service';
 class GraphQLServiceFactory {
     _logger: any
     _config: any
-    _sheetsOperator: any
-    constructor(logger, config, sheetsOperator) {
+    _sheetsService: any
+    constructor(logger, config, sheetsService) {
         this._logger = logger;
         this._config = config;
-        this._sheetsOperator = sheetsOperator;
+        this._sheetsService = sheetsService;
     }
 
-    create(logger=this._logger, config=this._config, sheetsOperator=this._sheetsOperator) {
-        return new GraphQLService(logger, config, sheetsOperator);
+    create(logger=this._logger, config=this._config, sheetsService=this._sheetsService) {
+        return new GraphQLService(logger, config, sheetsService);
     }
 }
 

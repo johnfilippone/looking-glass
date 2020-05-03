@@ -1,8 +1,8 @@
 'use strict'
 
-import SheetsOperator from './sheets-operator';
+import SheetsService from './sheets-service';
 
-class SheetsOperatorFactory {
+class SheetsServiceFactory {
     _logger: any
     _config: any
     constructor(logger, config) {
@@ -11,9 +11,9 @@ class SheetsOperatorFactory {
     }
 
     create(logger=this._logger, config=this._config) {
-        return new SheetsOperator(logger, config);
+        return new SheetsService(logger, config);
     }
 }
 
-export default SheetsOperatorFactory;
+export default SheetsServiceFactory;
 

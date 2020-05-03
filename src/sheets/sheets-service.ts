@@ -8,7 +8,7 @@ import { google } from 'googleapis';
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
 // Responsible for communicating with the Google Sheets API
-class SheetsOperator {
+class SheetsService {
     _auth: any
     _logger: any
     _config: any
@@ -83,4 +83,4 @@ class SheetsOperator {
 
 }
 
-export default SheetsOperator;
+export default SheetsService;
