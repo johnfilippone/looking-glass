@@ -1,0 +1,15 @@
+.Countdown {
+    height: 200px;
+    width: 200px;
+    margin: 30px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.countdown-title {
+    font-size: 18px;
+}
+.countdown-number {
+    font-size: 72px;
+}

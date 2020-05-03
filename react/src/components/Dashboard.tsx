@@ -1,6 +1,7 @@
 import React from 'react';
 import './Dashboard.css';
 import ContextMenu from './ContextMenu';
+import Countdown from './Countdown';
 import { Line } from 'react-chartjs-2';
 import { request } from 'graphql-request'
 
@@ -162,6 +163,8 @@ class Dashboard extends React.Component<any, any> {
         };
         return (
             <div className="Dashboard" onContextMenu={this.toggleContextMenu}>
+                <Countdown title="Days until TX" date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
+                <Countdown title="Days to End of Diet" date={Date.parse('21 June 2020 00:00:00 GMT')} />
                 <Line data={weightChartData} />
                 <Line data={connectingChartData} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
