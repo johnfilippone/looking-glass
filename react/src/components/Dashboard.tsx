@@ -19,6 +19,7 @@ class Dashboard extends React.Component<any, any> {
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
         this.getClickPosition = this.getClickPosition.bind(this);
         this.getSheet = this.getSheet.bind(this);
+        this.buildLineData = this.buildLineData.bind(this);
     }
 
     async componentDidMount() {
@@ -58,39 +59,12 @@ class Dashboard extends React.Component<any, any> {
         };
     }
 
-    render() {
-        let weightData = this.state.weightData;
-        let connectingData = this.state.connectingData;
-
-        const weightChartData = {
-            labels: weightData.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; }),
-            datasets: [{
-                label: 'Body Weight (lbs)',
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: 'rgba(75,192,192,1)',
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: 'rgba(75,192,192,1)',
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                pointHoverBorderColor: 'rgba(220,220,220,1)',
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: weightData.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })
-            }]
-        };
-        const connectingChartData = {
-            labels: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; }),
-            datasets: [
-                {
-                    label: 'Max dbs',
+    buildLineData(xValues: any, lines: any) {
+        return {
+            labels: xValues,
+            datasets: lines.map((line: any) => {
+                return {
+                    label: line.label,
                     fill: false,
                     lineTension: 0.1,
                     backgroundColor: 'rgba(75,192,192,0.4)',
@@ -108,31 +82,24 @@ class Dashboard extends React.Component<any, any> {
                     pointHoverBorderWidth: 2,
                     pointRadius: 1,
                     pointHitRadius: 10,
-                    data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })
-                },
-                {
-                    label: 'Avg dbs',
-                    fill: false,
-                    lineTension: 0.1,
-                    backgroundColor: 'rgba(75,192,192,0.4)',
-                    borderColor: 'rgba(75,192,192,1)',
-                    borderCapStyle: 'butt',
-                    borderDash: [],
-                    borderDashOffset: 0.0,
-                    borderJoinStyle: 'miter',
-                    pointBorderColor: 'rgba(75,192,192,1)',
-                    pointBackgroundColor: '#fff',
-                    pointBorderWidth: 1,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                    pointHoverBorderColor: 'rgba(220,220,220,1)',
-                    pointHoverBorderWidth: 2,
-                    pointRadius: 1,
-                    pointHitRadius: 10,
-                    data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })
+                    data: line.data
                 }
-            ]
+            })
         };
+    }
+
+    render() {
+        let weightSheet = this.state.weightData;
+        const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
+        const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
+        const weightChartData = this.buildLineData(weightDates, [weightLine]);
+
+        let connectingData = this.state.connectingData;
+        const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
+        const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })};
+        const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })};
+        const connectingChartData = this.buildLineData(connectingDates, [maxLine, avgLine]);
+
         return (
             <div className="Dashboard" onContextMenu={this.toggleContextMenu}>
                 <Countdown title="Days until TX" date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
