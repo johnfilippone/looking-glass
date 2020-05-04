@@ -13,7 +13,9 @@ class Dashboard extends React.Component<any, any> {
             contextMenuActive: false,
             contextMenuClickPosition: { xPosition: 0, yPosition: 0 },
             weightData: [],
-            connectingData: []
+            connectingData: [],
+            studyData: [],
+            practiceData: []
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
@@ -25,9 +27,13 @@ class Dashboard extends React.Component<any, any> {
     async componentDidMount() {
         const weightData = await this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics')
         const connectingData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume');
+        const studyData = await this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log');
+        const practiceData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log');
         this.setState({
             weightData: weightData.sheets,
-            connectingData: connectingData.sheets
+            connectingData: connectingData.sheets,
+            studyData: studyData.sheets,
+            practiceData: practiceData.sheets
         });
     }
 
@@ -100,12 +106,17 @@ class Dashboard extends React.Component<any, any> {
         const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })};
         const connectingChartData = this.buildLineData(connectingDates, [maxLine, avgLine]);
 
+        const studySheet = this.state.studyData;
+        const studyDates = studySheet.map((entry: any) => { return entry[0]; });
+        const practiceSheet = this.state.practiceData;
+        const practiceData = practiceSheet.map((entry: any) => { return entry[0]; });
+
         return (
-            <div className="Dashboard" onContextMenu={this.toggleContextMenu}>
-                <Countdown title="Days until TX" date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
-                <Countdown title="Days to End of Diet" date={Date.parse('21 June 2020 00:00:00 GMT')} />
-                <Streak title="Study Streak" streak={45} retroNumerator={94} retroDenominator={100} />
-                <Streak title="KTVA Streak" streak={45} retroNumerator={94} retroDenominator={100} />
+            <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
+                <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
+                <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
+                <Streak title='Study Streak' dates={studyDates} lookback={7} />
+                <Streak title='Practice Streak' dates={practiceData} lookback={7} />
                 <Line data={weightChartData} />
                 <Line data={connectingChartData} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
