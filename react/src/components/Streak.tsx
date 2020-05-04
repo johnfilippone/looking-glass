@@ -1,6 +1,7 @@
 import React from 'react';
 import './Streak.css';
 
+// TODO currently this is dependent on getting mm/dd/yyyy date format from the spreadsheet
 function Streak(props: any) {
     let currentDay = new Date();
     currentDay.setDate(currentDay.getDate() - 1);

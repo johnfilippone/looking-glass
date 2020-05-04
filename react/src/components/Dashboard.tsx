@@ -15,7 +15,8 @@ class Dashboard extends React.Component<any, any> {
             weightData: [],
             connectingData: [],
             studyData: [],
-            practiceData: []
+            practiceData: [],
+            exerciseData: []
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
@@ -29,11 +30,13 @@ class Dashboard extends React.Component<any, any> {
         const connectingData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume');
         const studyData = await this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log');
         const practiceData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log');
+        const exerciseData = await this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log');
         this.setState({
             weightData: weightData.sheets,
             connectingData: connectingData.sheets,
             studyData: studyData.sheets,
-            practiceData: practiceData.sheets
+            practiceData: practiceData.sheets,
+            exerciseData: exerciseData.sheets
         });
     }
 
@@ -107,16 +110,19 @@ class Dashboard extends React.Component<any, any> {
         const connectingChartData = this.buildLineData(connectingDates, [maxLine, avgLine]);
 
         const studySheet = this.state.studyData;
-        const studyDates = studySheet.map((entry: any) => { return entry[0]; });
+        const studyData = studySheet.map((entry: any) => { return entry[0]; });
         const practiceSheet = this.state.practiceData;
         const practiceData = practiceSheet.map((entry: any) => { return entry[0]; });
+        const exerciseSheet = this.state.exerciseData;
+        const exerciseData = exerciseSheet.map((entry: any) => { return entry[0]; });
 
         return (
             <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
                 <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                 <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
-                <Streak title='Study Streak' dates={studyDates} lookback={7} />
+                <Streak title='Study Streak' dates={studyData} lookback={7} />
                 <Streak title='Practice Streak' dates={practiceData} lookback={7} />
+                <Streak title='Exercise Streak' dates={exerciseData} lookback={7} />
                 <Line data={weightChartData} />
                 <Line data={connectingChartData} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
