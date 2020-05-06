@@ -27,17 +27,21 @@ class Dashboard extends React.Component<any, any> {
     }
 
     async componentDidMount() {
-        const weightData = await this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics')
-        const connectingData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume');
-        const studyData = await this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log Pivot');
-        const practiceData = await this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log Pivot');
-        const exerciseData = await this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot');
-        this.setState({
-            weightData: weightData.sheets,
-            connectingData: connectingData.sheets,
-            studyData: studyData.sheets,
-            practiceData: practiceData.sheets,
-            exerciseData: exerciseData.sheets
+        let promises = [
+            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics'),
+            this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume'),
+            this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log Pivot'),
+            this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log Pivot'),
+            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot')
+        ];
+        Promise.all(promises).then((sheets) => {
+            this.setState({
+                weightData: sheets[0].sheets,
+                connectingData: sheets[1].sheets,
+                studyData: sheets[2].sheets,
+                practiceData: sheets[3].sheets,
+                exerciseData: sheets[4].sheets
+            });
         });
     }
 
@@ -99,12 +103,12 @@ class Dashboard extends React.Component<any, any> {
     }
 
     render() {
-        let weightSheet = this.state.weightData;
+        const weightSheet = this.state.weightData;
         const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
         const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
         const weightChartData = this.buildLineData(weightDates, [weightLine]);
 
-        let connectingData = this.state.connectingData;
+        const connectingData = this.state.connectingData;
         const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
         const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })};
         const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })};
@@ -123,13 +127,13 @@ class Dashboard extends React.Component<any, any> {
                     <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                     <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
                     <Streak title='Study Streak' dates={studyData} lookback={7} />
-                    <Streak title='Practice Streak' dates={practiceData} lookback={7} />
+                    <Streak title='KTVA Practice Streak' dates={practiceData} lookback={7} />
                     <Streak title='Exercise Streak' dates={exerciseData} lookback={7} />
                 </div>
                 <div className='group'>
                     <DailyProgress title='Daily Study' width={200} height={20} goal={14.29} unit='%' data={studySheet} parameter='SUM of % Completed'/>
                     <DailyProgress title='Daily Exercise' width={200} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
-                    <DailyProgress title='Daily Practice' width={200} height={20} goal={5400} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
+                    <DailyProgress title='Daily KTVA Practice' width={200} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
                 </div>
                 <Line data={weightChartData} />
                 <Line data={connectingChartData} />
