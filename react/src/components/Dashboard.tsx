@@ -1,10 +1,11 @@
 import React from 'react';
-import './Dashboard.css';
 import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
+import DailyProgress from './DailyProgress';
 import { Line } from 'react-chartjs-2';
 import { request } from 'graphql-request'
+import './Dashboard.css';
 
 class Dashboard extends React.Component<any, any> {
     constructor(props: any) {
@@ -118,6 +119,8 @@ class Dashboard extends React.Component<any, any> {
 
         return (
             <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
+                <DailyProgress title='Daily Study' width={200} height={20} goal={14.29} unit='%' data={studySheet} parameter='SUM of % Completed'/>
+                <DailyProgress title='Daily Exercise' width={200} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
                 <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                 <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
                 <Streak title='Study Streak' dates={studyData} lookback={7} />

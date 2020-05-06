@@ -1,0 +1,18 @@
+.DailyProgress {
+    height: 150px;
+    width: 350px;
+    margin: 30px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.daily-progress-title {
+    font-size: 18px;
+}
+.DailyProgress svg path {
+  fill: none;
+  stroke-miterlimit: round;
+  transition: stroke-dashoffset 850ms ease-in-out;
+}

@@ -37,7 +37,7 @@ function Streak(props: any) {
         <div className='Streak'>
             <div className='streak-title'>{props.title}</div>
             <div className='streak-number'>{streak}</div>
-            <div className='streak-retro'>{lookbackNumerator}/{props.lookback}</div>
+            <div className='streak-lookback'>{lookbackNumerator}/{props.lookback}</div>
         </div>
     );
 }

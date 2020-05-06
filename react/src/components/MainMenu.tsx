@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import './MainMenu.css';
 import DataTableLink from './DataTableLink';
+import './MainMenu.css';
 
 function MainMenu() {
   const dataTables = ["Body Metrics", "Diet", "Reading", "Expenses"]
