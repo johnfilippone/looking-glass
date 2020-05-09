@@ -20,7 +20,7 @@ function Streak(props: any) {
         if (!dateEntry || dateEntry.toString() === 'Invalid Date' || dateEntry > currentDay) continue;
 
         // Stop looking if we already reached the max lookback days
-        if (lookbackCount > props.lookback) break;
+        if (lookbackCount >= props.lookback) break;
         lookbackCount++;
 
         if (datesAreOnSameDay(dateEntry, currentDay)) {
