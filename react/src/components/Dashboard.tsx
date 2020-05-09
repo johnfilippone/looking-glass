@@ -106,7 +106,8 @@ class Dashboard extends React.Component<any, any> {
         const weightSheet = this.state.weightData;
         const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
         const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
-        const weightChartData = this.buildLineData(weightDates, [weightLine]);
+        const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[2]; }).map((data: any) => { return parseFloat(data[2]); })};
+        const weightChartData = this.buildLineData(weightDates, [weightLine, weightAvgLine]);
 
         const connectingData = this.state.connectingData;
         const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
