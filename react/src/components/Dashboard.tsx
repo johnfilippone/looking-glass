@@ -127,9 +127,9 @@ class Dashboard extends React.Component<any, any> {
                 <div className='group'>
                     <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                     <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
-                    <Streak title='Study Streak' dates={studyData} lookback={7} />
-                    <Streak title='KTVA Practice Streak' dates={practiceData} lookback={7} />
-                    <Streak title='Exercise Streak' dates={exerciseData} lookback={7} />
+                    <Streak title='Study Streak' dates={studyData} lookback={30} />
+                    <Streak title='KTVA Practice Streak' dates={practiceData} lookback={30} />
+                    <Streak title='Exercise Streak' dates={exerciseData} lookback={30} />
                 </div>
                 <div className='group'>
                     <DailyProgress title='Daily Study' width={200} height={20} goal={14.29} unit='%' data={studySheet} parameter='SUM of % Completed'/>
