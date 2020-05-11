@@ -12,6 +12,7 @@ function DailyProgress(props: any) {
             const rowLabel = props.data[i][0];
             if (rowLabel !== formattedDate + ' Total') continue;
             valueString = props.data[i][parameterIndex];
+            // TODO make this conversion a utility function (may not be needed if using a database)
             if (valueString.split(':').length === 3) {
                 const components = valueString.split(':');
                 value = (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);

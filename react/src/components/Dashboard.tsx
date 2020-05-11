@@ -3,8 +3,8 @@ import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
 import DailyProgress from './DailyProgress';
-import { Line } from 'react-chartjs-2';
-import { request } from 'graphql-request'
+import { Line, Pie } from 'react-chartjs-2';
+import { request } from 'graphql-request';
 import './Dashboard.css';
 
 class Dashboard extends React.Component<any, any> {
@@ -17,13 +17,16 @@ class Dashboard extends React.Component<any, any> {
             connectingData: [],
             studyData: [],
             practiceData: [],
-            exerciseData: []
+            exerciseData: [],
+            exerciseWeekData: [],
+            practiceWeekData: []
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
         this.getClickPosition = this.getClickPosition.bind(this);
         this.getSheet = this.getSheet.bind(this);
-        this.buildLineData = this.buildLineData.bind(this);
+        this.buildLineChartInput = this.buildLineChartInput.bind(this);
+        this.buildPieChartInput = this.buildPieChartInput.bind(this);
     }
 
     async componentDidMount() {
@@ -32,7 +35,9 @@ class Dashboard extends React.Component<any, any> {
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume'),
             this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log Pivot'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log Pivot'),
-            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot')
+            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot'),
+            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Week Pivot'),
+            this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Week Pivot'),
         ];
         Promise.all(promises).then((sheets) => {
             this.setState({
@@ -40,7 +45,9 @@ class Dashboard extends React.Component<any, any> {
                 connectingData: sheets[1].sheets,
                 studyData: sheets[2].sheets,
                 practiceData: sheets[3].sheets,
-                exerciseData: sheets[4].sheets
+                exerciseData: sheets[4].sheets,
+                exerciseWeekData: sheets[5].sheets,
+                practiceWeekData: sheets[6].sheets
             });
         });
     }
@@ -73,7 +80,7 @@ class Dashboard extends React.Component<any, any> {
         };
     }
 
-    buildLineData(xValues: any, lines: any) {
+    buildLineChartInput(xValues: any, lines: any) {
         return {
             labels: xValues,
             datasets: lines.map((line: any) => {
@@ -102,42 +109,76 @@ class Dashboard extends React.Component<any, any> {
         };
     }
 
+    buildPieChartInput(labels: any, data: any) {
+        const colors = labels.map((entry: any) => { return '#' + Math.random().toString(16).substr(2,6) });
+        return {
+            labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                hoverBackgroundColor: colors
+            }]
+        };
+    }
+
     render() {
         const weightSheet = this.state.weightData;
         const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
         const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
         const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[2]; }).map((data: any) => { return parseFloat(data[2]); })};
-        const weightChartData = this.buildLineData(weightDates, [weightLine, weightAvgLine]);
+        const weightChartInput = this.buildLineChartInput(weightDates, [weightLine, weightAvgLine]);
 
         const connectingData = this.state.connectingData;
         const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
         const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })};
         const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })};
-        const connectingChartData = this.buildLineData(connectingDates, [maxLine, avgLine]);
+        const connectingChartInput = this.buildLineChartInput(connectingDates, [maxLine, avgLine]);
 
         const studySheet = this.state.studyData;
-        const studyData = studySheet.map((entry: any) => { return entry[0]; });
-        const practiceSheet = this.state.practiceData;
-        const practiceData = practiceSheet.map((entry: any) => { return entry[0]; });
+        const studyDates = studySheet.map((entry: any) => { return entry[0]; });
         const exerciseSheet = this.state.exerciseData;
-        const exerciseData = exerciseSheet.map((entry: any) => { return entry[0]; });
+        const exerciseDates = exerciseSheet.map((entry: any) => { return entry[0]; });
+        const practiceSheet = this.state.practiceData;
+        const practiceDates = practiceSheet.map((entry: any) => { return entry[0]; });
+
+        const exerciseWeekSheet = this.state.exerciseWeekData;
+        const exerciseWeekData = exerciseWeekSheet.slice(1, exerciseWeekSheet.length-1);
+        const exercisePieLabels = exerciseWeekData.map((entry: any) => { return entry[0]; });
+        const exercisePieData = exerciseWeekData.map((entry: any) => {
+            const components = entry[1].split(':');
+            return (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
+        });
+        const exercisePieInput = this.buildPieChartInput(exercisePieLabels, exercisePieData);
+
+        const practiceWeekSheet = this.state.practiceWeekData;
+        const practiceWeekData = practiceWeekSheet.slice(1, practiceWeekSheet.length-1);
+        const practicePieLabels = practiceWeekData.map((entry: any) => { return entry[0]; });
+        const practicePieData = practiceWeekData.map((entry: any) => {
+            const components = entry[1].split(':');
+            return (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
+        });
+        const practicePieInput = this.buildPieChartInput(practicePieLabels, practicePieData);
 
         return (
             <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
                 <div className='group'>
                     <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
                     <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
-                    <Streak title='Study Streak' dates={studyData} lookback={30} />
-                    <Streak title='KTVA Practice Streak' dates={practiceData} lookback={30} />
-                    <Streak title='Exercise Streak' dates={exerciseData} lookback={30} />
+                    <Streak title='Study Streak' dates={studyDates} lookback={30} />
+                    <Streak title='KTVA Practice Streak' dates={practiceDates} lookback={30} />
+                    <Streak title='Exercise Streak' dates={exerciseDates} lookback={30} />
                 </div>
                 <div className='group'>
                     <DailyProgress title='Daily Study' width={200} height={20} goal={14.29} unit='%' data={studySheet} parameter='SUM of % Completed'/>
                     <DailyProgress title='Daily Exercise' width={200} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
                     <DailyProgress title='Daily KTVA Practice' width={200} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
                 </div>
-                <Line data={weightChartData} />
-                <Line data={connectingChartData} />
+                <div className='pie-group'>
+                    <Pie height={50} data={exercisePieInput} />
+                    <Pie height={50} data={practicePieInput} />
+                </div>
+                <Line data={weightChartInput} />
+                <Line data={connectingChartInput} />
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
