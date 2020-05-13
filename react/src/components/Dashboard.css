@@ -4,7 +4,11 @@
     min-height: 100vh;
     font-size: calc(10px + 2vmin);
     color: white;
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-rows: 1fr 2fr 2fr 2fr;
 }
-.Dashboard div.group {
+.flex-row {
     display: flex;
+    justify-content: space-evenly;
 }

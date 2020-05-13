@@ -161,27 +161,34 @@ class Dashboard extends React.Component<any, any> {
 
         return (
             <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
-                <div className='group'>
-                    <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
-                    <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
+                <div style={{gridColumn: '1 / 2', gridRow: '1 / 5'}}>
                     <Streak title='Study Streak' dates={studyDates} lookback={30} />
                     <Streak title='KTVA Practice Streak' dates={practiceDates} lookback={30} />
                     <Streak title='Exercise Streak' dates={exerciseDates} lookback={30} />
+                    <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
+                    <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
                 </div>
-                <div className='group'>
-                    <DailyProgress title='Daily Study' width={200} height={20} goal={7.14} unit='%' data={studySheet} parameter='SUM of % Completed'/>
-                    <DailyProgress title='Daily Exercise' width={200} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
-                    <DailyProgress title='Daily KTVA Practice' width={200} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
+                <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
+                    <DailyProgress title='Daily Study' width={300} height={20} goal={7.14} unit='%' data={studySheet} parameter='SUM of % Completed'/>
+                    <DailyProgress title='Daily Exercise' width={300} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
+                    <DailyProgress title='Daily KTVA Practice' width={300} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
                 </div>
-                <Pie height={50} data={exercisePieInput} />
-                <Pie height={50} data={practicePieInput} />
-                <Line data={weightChartInput} />
-                <Line data={connectingChartInput} />
+                <div className='flex-row' style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
+                    <Pie data={exercisePieInput} />
+                </div>
+                <div className='flex-row' style={{gridColumn: '3 / 4', gridRow: '2 / 3'}}>
+                    <Pie data={practicePieInput} />
+                </div>
+                <div className='flex-row' style={{gridColumn: '2 / 3', gridRow: '3 / 4'}}>
+                    <Line data={weightChartInput} />
+                </div>
+                <div className='flex-row' style={{gridColumn: '3 / 4', gridRow: '3 / 4'}}>
+                    <Line data={connectingChartInput} />
+                </div>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
     }
 }
-
 
 export default Dashboard;

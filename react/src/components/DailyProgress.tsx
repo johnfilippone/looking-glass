@@ -36,6 +36,7 @@ function DailyProgress(props: any) {
     return (
         <div className='DailyProgress'>
             <div className='daily-progress-title'>{props.title}</div>
+            <div className='daily-progress-value'>{value} out of {props.goal} {props.unit}</div>
             <svg width={props.width} height={props.height}>
                 <path
                     className="bg"
@@ -48,7 +49,6 @@ function DailyProgress(props: any) {
                     d={`M0 ${props.height/2}, ${props.width} ${props.height/2}`} style={{strokeWidth: props.height, strokeDasharray: props.width, strokeDashoffset: dashOffset}}>
                 </path>
             </svg>
-            <div className='daily-progress-value'>{value} out of {props.goal} {props.unit}</div>
         </div>
     );
 }
