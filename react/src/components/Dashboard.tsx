@@ -169,7 +169,7 @@ class Dashboard extends React.Component<any, any> {
                     <Streak title='Exercise Streak' dates={exerciseDates} lookback={30} />
                 </div>
                 <div className='group'>
-                    <DailyProgress title='Daily Study' width={200} height={20} goal={10} unit='%' data={studySheet} parameter='SUM of % Completed'/>
+                    <DailyProgress title='Daily Study' width={200} height={20} goal={7.14} unit='%' data={studySheet} parameter='SUM of % Completed'/>
                     <DailyProgress title='Daily Exercise' width={200} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
                     <DailyProgress title='Daily KTVA Practice' width={200} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
                 </div>
