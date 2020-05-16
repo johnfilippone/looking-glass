@@ -6,7 +6,7 @@
     color: white;
     display: grid;
     grid-template-columns: 1fr 2fr 2fr;
-    grid-template-rows: 1fr 2fr 2fr 2fr;
+    grid-template-rows: 1fr 4fr 4fr 4fr;
 }
 .flex-row {
     display: flex;

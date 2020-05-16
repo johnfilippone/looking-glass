@@ -3,6 +3,7 @@ import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
 import DailyProgress from './DailyProgress';
+import EventList from './EventList';
 import { Line, Pie } from 'react-chartjs-2';
 import { request } from 'graphql-request';
 import './Dashboard.css';
@@ -19,7 +20,8 @@ class Dashboard extends React.Component<any, any> {
             practiceData: [],
             exerciseData: [],
             exerciseWeekData: [],
-            practiceWeekData: []
+            practiceWeekData: [],
+            eventsData: []
         };
 
         this.toggleContextMenu = this.toggleContextMenu.bind(this);
@@ -38,6 +40,7 @@ class Dashboard extends React.Component<any, any> {
             this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot'),
             this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Week Pivot'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Week Pivot'),
+            this.getSheet('1OArbMSXtJAsGGWvl_1V7u2lwUncutERJ-TArYZmmExc', 'Events')
         ];
         Promise.all(promises).then((sheets) => {
             this.setState({
@@ -47,7 +50,8 @@ class Dashboard extends React.Component<any, any> {
                 practiceData: sheets[3].sheets,
                 exerciseData: sheets[4].sheets,
                 exerciseWeekData: sheets[5].sheets,
-                practiceWeekData: sheets[6].sheets
+                practiceWeekData: sheets[6].sheets,
+                eventsData: sheets[7].sheets
             });
         });
     }
@@ -126,7 +130,7 @@ class Dashboard extends React.Component<any, any> {
         const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
         const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
         const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[2]; }).map((data: any) => { return parseFloat(data[2]); })};
-        const weightChartInput = this.buildLineChartInput(weightDates, [weightLine, weightAvgLine]);
+        const weightChartInput = this.buildLineChartInput(weightDates, [weightAvgLine]);
 
         const connectingData = this.state.connectingData;
         const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
@@ -159,6 +163,12 @@ class Dashboard extends React.Component<any, any> {
         });
         const practicePieInput = this.buildPieChartInput(practicePieLabels, practicePieData);
 
+        const eventsData = this.state.eventsData;
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+        const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay());
+        const firstDayOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay()-7);
+
         return (
             <div className='Dashboard' onContextMenu={this.toggleContextMenu}>
                 <div style={{gridColumn: '1 / 2', gridRow: '1 / 5'}}>
@@ -169,21 +179,27 @@ class Dashboard extends React.Component<any, any> {
                     <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
                 </div>
                 <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
-                    <DailyProgress title='Daily Study' width={300} height={20} goal={7.14} unit='%' data={studySheet} parameter='SUM of % Completed'/>
-                    <DailyProgress title='Daily Exercise' width={300} height={20} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
-                    <DailyProgress title='Daily KTVA Practice' width={300} height={20} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
+                    <DailyProgress title='Daily Study' width={300} height={10} goal={7.14} unit='%' data={studySheet} parameter='SUM of % Completed'/>
+                    <DailyProgress title='Daily Exercise' width={300} height={10} goal={200} unit='Seconds' data={exerciseSheet} parameter='SUM of Time Under Tension'/>
+                    <DailyProgress title='Daily KTVA Practice' width={300} height={10} goal={2700} unit='Seconds' data={practiceSheet} parameter='SUM of Duration'/>
                 </div>
-                <div className='flex-row' style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
+                <div style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
                     <Pie data={exercisePieInput} />
                 </div>
-                <div className='flex-row' style={{gridColumn: '3 / 4', gridRow: '2 / 3'}}>
+                <div style={{gridColumn: '3 / 4', gridRow: '2 / 3'}}>
                     <Pie data={practicePieInput} />
                 </div>
-                <div className='flex-row' style={{gridColumn: '2 / 3', gridRow: '3 / 4'}}>
+                <div style={{gridColumn: '2 / 3', gridRow: '3 / 4'}}>
                     <Line data={weightChartInput} />
                 </div>
-                <div className='flex-row' style={{gridColumn: '3 / 4', gridRow: '3 / 4'}}>
+                <div style={{gridColumn: '3 / 4', gridRow: '3 / 4'}}>
                     <Line data={connectingChartInput} />
+                </div>
+                <div style={{gridColumn: '2 / 3', gridRow: '4 / 5'}}>
+                    <EventList title='Last Week' data={eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} />
+                </div>
+                <div style={{gridColumn: '3 / 4', gridRow: '4 / 5'}}>
+                    <EventList title='This Week' data={eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} />
                 </div>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>

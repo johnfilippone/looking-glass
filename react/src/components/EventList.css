@@ -1,0 +1,13 @@
+.EventList {
+    font-family: monaco;
+    font-size: 12px;
+    text-align: left;
+    padding-top: 10px;
+}
+.EventList ul {
+    list-style: none;
+    padding: 0;
+}
+.EventList div {
+    font-size: 20px;
+}

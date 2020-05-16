@@ -1,12 +1,11 @@
 .DailyProgress {
-    margin: 30px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
 }
 .daily-progress-title {
-    font-size: 20px;
+    font-size: 18px;
 }
 .daily-progress-value {
     font-size: 14px;
