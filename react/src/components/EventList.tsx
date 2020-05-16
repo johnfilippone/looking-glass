@@ -9,7 +9,7 @@ function EventList(props: any) {
     });
 
     const listItems = events.map((row: any) => {
-        return <li>{row[0]}</li>;
+        return <li key={row[0]}>{row[0]}</li>;
     });
     return (
         <div className='EventList'>
