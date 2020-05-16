@@ -8,8 +8,8 @@ import { Line, Pie } from 'react-chartjs-2';
 import { request } from 'graphql-request';
 import './Dashboard.css';
 
-class Dashboard extends React.Component<any, any> {
-    constructor(props: any) {
+class Dashboard extends React.Component {
+    constructor(props) {
         super(props)
         this.state = {
             contextMenuActive: false,
@@ -55,28 +55,28 @@ class Dashboard extends React.Component<any, any> {
         ];
         Promise.all(promises).then((sheets) => {
             const weightSheet = sheets[0].sheets;
-            const weightDates = weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return data[0]; });
-            //const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[1]; }).map((data: any) => { return parseFloat(data[1]); })};
-            const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data: any) => { return data[2]; }).map((data: any) => { return parseFloat(data[2]); })};
+            const weightDates = weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return data[0]; });
+            //const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return parseFloat(data[1]); })};
+            const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data) => { return data[2]; }).map((data) => { return parseFloat(data[2]); })};
             const weightChartInput = this.buildLineChartInput(weightDates, [weightAvgLine]);
 
             const connectingData = sheets[1].sheets;
-            const connectingDates = connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return data[0]; });
-            const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[8]); })};
-            const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data: any) => { return data[7] && data[8]; }).map((data: any) => { return parseFloat(data[7]); })};
+            const connectingDates = connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return data[0]; });
+            const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[8]); })};
+            const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[7]); })};
             const connectingChartInput = this.buildLineChartInput(connectingDates, [maxLine, avgLine]);
 
             const studySheet = sheets[2].sheets;
-            const studyDates = studySheet.map((entry: any) => { return entry[0]; });
+            const studyDates = studySheet.map((entry) => { return entry[0]; });
             const practiceSheet = sheets[3].sheets;
-            const practiceDates = practiceSheet.map((entry: any) => { return entry[0]; });
+            const practiceDates = practiceSheet.map((entry) => { return entry[0]; });
             const exerciseSheet = sheets[4].sheets;
-            const exerciseDates = exerciseSheet.map((entry: any) => { return entry[0]; });
+            const exerciseDates = exerciseSheet.map((entry) => { return entry[0]; });
 
             const exerciseWeekSheet = sheets[5].sheets;
             const exerciseWeekData = exerciseWeekSheet.slice(1, exerciseWeekSheet.length-1);
-            const exercisePieLabels = exerciseWeekData.map((entry: any) => { return entry[0]; });
-            const exercisePieData = exerciseWeekData.map((entry: any) => {
+            const exercisePieLabels = exerciseWeekData.map((entry) => { return entry[0]; });
+            const exercisePieData = exerciseWeekData.map((entry) => {
                 const components = entry[1].split(':');
                 return (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
             });
@@ -84,8 +84,8 @@ class Dashboard extends React.Component<any, any> {
 
             const practiceWeekSheet = sheets[6].sheets;
             const practiceWeekData = practiceWeekSheet.slice(1, practiceWeekSheet.length-1);
-            const practicePieLabels = practiceWeekData.map((entry: any) => { return entry[0]; });
-            const practicePieData = practiceWeekData.map((entry: any) => {
+            const practicePieLabels = practiceWeekData.map((entry) => { return entry[0]; });
+            const practicePieData = practiceWeekData.map((entry) => {
                 const components = entry[1].split(':');
                 return (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
             });
@@ -107,11 +107,11 @@ class Dashboard extends React.Component<any, any> {
         });
     }
 
-    async getSheet(spreadsheetId: any, range: any) {
+    async getSheet(spreadsheetId, range) {
         return request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"${spreadsheetId}", range:"${range}") }`);
     }
 
-    toggleContextMenuOn(e: any) {
+    toggleContextMenuOn(e) {
         e.preventDefault();
         this.setState({
             contextMenuActive: true,
@@ -119,14 +119,14 @@ class Dashboard extends React.Component<any, any> {
         });
     }
 
-    toggleContextMenuOff(e: any) {
+    toggleContextMenuOff(e) {
         e.preventDefault();
         this.setState({
             contextMenuActive: false
         });
     }
 
-    clickListener(e: any) {
+    clickListener(e) {
         if (this.state.contextMenuActive) {
             if (this.clickInsideElement(e, 'ContextMenu')) {
                 // handle menu links
@@ -137,7 +137,7 @@ class Dashboard extends React.Component<any, any> {
         }
     }
 
-    clickInsideElement(e: any, className: any) {
+    clickInsideElement(e, className) {
         var el = e.srcElement || e.target;
         if ( el.classList.contains(className) ) {
             return el;
@@ -152,7 +152,7 @@ class Dashboard extends React.Component<any, any> {
     }
 
 
-    getClickPosition(e: any) {
+    getClickPosition(e) {
         let posx = 0;
         let posy = 0;
         if (e.pageX || e.pageY) {
@@ -168,10 +168,10 @@ class Dashboard extends React.Component<any, any> {
         };
     }
 
-    buildLineChartInput(xValues: any, lines: any) {
+    buildLineChartInput(xValues, lines) {
         return {
             labels: xValues,
-            datasets: lines.map((line: any) => {
+            datasets: lines.map((line) => {
                 return {
                     label: line.label,
                     fill: false,
@@ -197,8 +197,8 @@ class Dashboard extends React.Component<any, any> {
         };
     }
 
-    buildPieChartInput(labels: any, data: any) {
-        const colors = labels.map((entry: any) => { return '#' + Math.random().toString(16).substr(2,6) });
+    buildPieChartInput(labels, data) {
+        const colors = labels.map((entry) => { return '#' + Math.random().toString(16).substr(2,6) });
         return {
             labels,
             datasets: [{

@@ -3,7 +3,7 @@ import './Countdown.css';
 
 const msPerDay = 86400000;
 
-function Countdown(props: any) {
+function Countdown(props) {
     const timestampDifference = props.date - Date.now();
     let daysLeft = timestampDifference <= 0 ? 0 : Math.ceil(timestampDifference/msPerDay);
     return (

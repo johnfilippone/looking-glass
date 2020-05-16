@@ -3,14 +3,14 @@ import './Streak.css';
 
 // TODO add condition; right now it counts toward the streak as long as there is any entry for the date
 // expects dates to be sorted in decending order and to not have date duplicates
-function Streak(props: any) {
+function Streak(props) {
     let streak = 0;
     let activeStreak = true;
     let lookbackNumerator = 0;
     let lookbackCount = 0;
     let currentDay = new Date();
     currentDay.setDate(currentDay.getDate() - 1);
-    const datesAreOnSameDay = (first: any, second: any) => {
+    const datesAreOnSameDay = (first, second) => {
         return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth() && first.getDate() === second.getDate();
     };
 

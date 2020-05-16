@@ -1,7 +1,7 @@
 import React from 'react';
 import './ContextMenu.css';
 
-function ContextMenu(props: any) {
+function ContextMenu(props) {
     const menuWidth = 200;
     const menuHeight = 100;
     const position = getMenuPosition(props.clickPosition, menuWidth, menuHeight);
@@ -14,7 +14,7 @@ function ContextMenu(props: any) {
         top: position.yPosition
     };
 
-    function getMenuPosition(clickCoords: any, menuWidth: number, menuHeight: number) {
+    function getMenuPosition(clickCoords, menuWidth, menuHeight) {
         const clickCoordsX = clickCoords.xPosition;
         const clickCoordsY = clickCoords.yPosition;
         let position = {

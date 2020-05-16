@@ -1,7 +1,7 @@
 import React from 'react';
 import './DailyProgress.css';
 
-function DailyProgress(props: any) {
+function DailyProgress(props) {
     let valueString = '';
     let value = 0;
     if (props.data.length > 0) {
