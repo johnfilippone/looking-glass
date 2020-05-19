@@ -4,6 +4,9 @@
     text-align: left;
     padding-top: 10px;
 }
+.EventList:hover {
+    outline: 1px solid rgba(75,192,192,1);
+}
 .EventList ul {
     list-style: none;
     padding: 0;

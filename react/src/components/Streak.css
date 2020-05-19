@@ -4,6 +4,9 @@
     flex-direction: column;
     justify-content: center;
 }
+.Streak:hover {
+    outline: 1px solid rgba(75,192,192,1);
+}
 .streak-title {
     font-size: 18px;
 }
