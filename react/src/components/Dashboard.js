@@ -225,7 +225,7 @@ class Dashboard extends React.Component {
                     <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
                 </div>
                 <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
-                    <DailyProgress title='Daily Study' width={300} height={10} goal={7.14} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/>
+                    <DailyProgress title='Daily Study' width={300} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/>
                     <DailyProgress title='Daily Exercise' width={300} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension'/>
                     <DailyProgress title='Daily KTVA Practice' width={300} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration'/>
                 </div>
