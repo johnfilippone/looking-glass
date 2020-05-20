@@ -1,4 +1,5 @@
 import React from 'react';
+import Draggable from 'react-draggable';
 import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
@@ -218,34 +219,34 @@ class Dashboard extends React.Component {
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
                 <div style={{gridColumn: '1 / 2', gridRow: '1 / 5'}}>
-                    <Streak title='Study Streak' dates={this.state.studyDates} lookback={30} />
-                    <Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} />
-                    <Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} />
-                    <Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} />
-                    <Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} />
+                    <Draggable grid={[50, 50]}><div><Streak title='Study Streak' dates={this.state.studyDates} lookback={30} /></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} /></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} /></div></Draggable>
                 </div>
                 <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
-                    <DailyProgress title='Daily Study' width={300} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/>
-                    <DailyProgress title='Daily Exercise' width={300} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension'/>
-                    <DailyProgress title='Daily KTVA Practice' width={300} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration'/>
+                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily Study' width={300} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily Exercise' width={300} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension'/></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily KTVA Practice' width={300} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration'/></div></Draggable>
                 </div>
                 <div style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
-                    <Pie data={this.state.exercisePieInput} />
+                    <Draggable grid={[50, 50]}><div><Pie data={this.state.exercisePieInput} /></div></Draggable>
                 </div>
                 <div style={{gridColumn: '3 / 4', gridRow: '2 / 3'}}>
-                    <Pie data={this.state.practicePieInput} />
+                    <Draggable grid={[50, 50]}><div><Pie data={this.state.practicePieInput} /></div></Draggable>
                 </div>
                 <div style={{gridColumn: '2 / 3', gridRow: '3 / 4'}}>
-                    <Line data={this.state.weightChartInput} />
+                    <Draggable grid={[50, 50]}><div><Line data={this.state.weightChartInput} /></div></Draggable>
                 </div>
                 <div style={{gridColumn: '3 / 4', gridRow: '3 / 4'}}>
-                    <Line data={this.state.connectingChartInput} />
+                    <Draggable grid={[50, 50]}><div><Line data={this.state.connectingChartInput} /></div></Draggable>
                 </div>
                 <div style={{gridColumn: '2 / 3', gridRow: '4 / 5'}}>
-                    <EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} />
+                    <Draggable grid={[50, 50]}><div><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div></Draggable>
                 </div>
                 <div style={{gridColumn: '3 / 4', gridRow: '4 / 5'}}>
-                    <EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} />
+                    <Draggable grid={[50, 50]}><div><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div></Draggable>
                 </div>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
