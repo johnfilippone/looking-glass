@@ -223,7 +223,7 @@ class Dashboard extends React.Component {
                     <Draggable grid={[50, 50]}><div><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div></Draggable>
                     <Draggable grid={[50, 50]}><div><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div></Draggable>
                     <Draggable grid={[50, 50]}><div><Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} /></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><Countdown title='Days to End of Diet' date={Date.parse('21 June 2020 00:00:00 GMT')} /></div></Draggable>
+                    <Draggable grid={[50, 50]}><div><Countdown title='Days until hair cut' date={Date.parse('30 May 2020 00:00:00 GMT')} /></div></Draggable>
                 </div>
                 <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
                     <Draggable grid={[50, 50]}><div><DailyProgress title='Daily Study' width={300} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/></div></Draggable>
