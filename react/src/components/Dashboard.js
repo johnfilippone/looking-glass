@@ -216,19 +216,101 @@ class Dashboard extends React.Component {
         const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay());
         const firstDayOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay()-7);
 
+        const widgetState = [
+            {
+                type: 'Streak',
+                properties: {title: 'Study Streak', dates: this.state.studyDates, lookback: 30},
+                gridColumn: '1 / 10',
+                gridRow: '1 / 10'
+            },
+            {
+                type: 'Streak',
+                properties: {title: 'KTVA Practice Streak', dates: this.state.practiceDates, lookback: 30},
+                gridColumn: '1 / 10',
+                gridRow: '10 / 19'
+            },
+            {
+                type: 'Streak',
+                properties: {title: 'Exercise Streak', dates: this.state.exerciseDates, lookback: 30},
+                gridColumn: '1 / 10',
+                gridRow: '19 / 28'
+            },
+            {
+                type: 'Countdown',
+                properties: {title: 'Days until TX', date: Date.parse('01 Aug 2020 00:00:00 GMT')},
+                gridColumn: '1 / 10',
+                gridRow: '28 / 37'
+            },
+            {
+                type: 'Countdown',
+                properties: {title: 'Days until haircut', date: Date.parse('30 May 2020 00:00:00 GMT')},
+                gridColumn: '1 / 10',
+                gridRow: '37 / 46'
+            },
+            {
+                type: 'DailyProgress',
+                properties: {title: 'Daily Study', width: 300, height: 10, goal: 10, unit: '%', data: this.state.studySheet, parameter: 'SUM of % Completed'},
+                gridColumn: '10 / 28',
+                gridRow: '1 / 10'
+            },
+            {
+                type: 'DailyProgress',
+                properties: {title: 'Daily Exercise', width: 300, height: 10, goal: 200, unit: 'Seconds', data: this.state.exerciseSheet, parameter: 'SUM of Time Under Tension'},
+                gridColumn: '28 / 46',
+                gridRow: '1 / 10'
+            },
+            {
+                type: 'DailyProgress',
+                properties: {title: 'Daily KTVA Practice', width: 300, height: 10, goal: 2700, unit: 'Seconds', data: this.state.practiceSheet, parameter: 'SUM of Duration'},
+                gridColumn: '46 / 74',
+                gridRow: '1 / 10'
+            }
+        ];
+
+        const widgets = widgetState.map((widgetDetails, index) => {
+            let widget = null;
+            switch(widgetDetails.type) {
+                case 'Streak':
+                    widget = <Streak {...widgetDetails.properties} />;
+                    break;
+                case 'Countdown':
+                    widget = <Countdown {...widgetDetails.properties} />;
+                    break;
+                case 'DailyProgress':
+                    widget = <DailyProgress {...widgetDetails.properties} />;
+                    break;
+                default:
+                    widget = <div>Unidentified widget type</div>;
+            }
+            const position = {
+                gridColumn: widgetDetails.gridColumn,
+                gridRow: widgetDetails.gridRow
+            };
+            return (
+                <div className='widget-container' key={index} style={position}>
+                    <Draggable grid={[20, 20]}>
+                        <div style={{width: '100%', height: '100%'}}>{widget}</div>
+                    </Draggable>
+                </div>
+            )
+        });
+
+
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
+                {widgets}
+                <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
+            </div>
+        )
+    }
+}
+
+export default Dashboard;
+
+/*
                 <div style={{gridColumn: '1 / 2', gridRow: '1 / 5'}}>
-                    <Draggable grid={[50, 50]}><div><Streak title='Study Streak' dates={this.state.studyDates} lookback={30} /></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><Countdown title='Days until TX' date={Date.parse('01 Aug 2020 00:00:00 GMT')} /></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><Countdown title='Days until hair cut' date={Date.parse('30 May 2020 00:00:00 GMT')} /></div></Draggable>
                 </div>
                 <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
-                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily Study' width={300} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed'/></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily Exercise' width={300} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension'/></div></Draggable>
-                    <Draggable grid={[50, 50]}><div><DailyProgress title='Daily KTVA Practice' width={300} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration'/></div></Draggable>
                 </div>
                 <div style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
                     <Draggable grid={[50, 50]}><div><Pie data={this.state.exercisePieInput} /></div></Draggable>
@@ -248,10 +330,4 @@ class Dashboard extends React.Component {
                 <div style={{gridColumn: '3 / 4', gridRow: '4 / 5'}}>
                     <Draggable grid={[50, 50]}><div><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div></Draggable>
                 </div>
-                <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
-            </div>
-        )
-    }
-}
-
-export default Dashboard;
+ */

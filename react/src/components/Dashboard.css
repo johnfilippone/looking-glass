@@ -5,10 +5,9 @@
     font-size: calc(10px + 2vmin);
     color: white;
     display: grid;
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-rows: 1fr 4fr 4fr 4fr;
+    grid-template-columns: repeat(auto-fill, 20px);
+    grid-template-rows: repeat(auto-fill, 20px);
 }
-.flex-row {
-    display: flex;
-    justify-content: space-evenly;
+.widget-container {
+    outline: 1px solid rgba(75,192,192,1);
 }
