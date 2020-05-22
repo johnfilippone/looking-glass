@@ -1,5 +1,5 @@
 import React from 'react';
-import Draggable from 'react-draggable';
+import GridLayout from 'react-grid-layout';
 import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
@@ -8,6 +8,8 @@ import EventList from './EventList';
 import { Line, Pie } from 'react-chartjs-2';
 import { request } from 'graphql-request';
 import './Dashboard.css';
+import "../../node_modules/react-grid-layout/css/styles.css";
+import "../../node_modules/react-resizable/css/styles.css";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -216,89 +218,40 @@ class Dashboard extends React.Component {
         const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay());
         const firstDayOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay()-7);
 
-        const widgetState = [
-            {
-                type: 'Streak',
-                properties: {title: 'Study Streak', dates: this.state.studyDates, lookback: 30},
-                gridColumn: '1 / 10',
-                gridRow: '1 / 10'
-            },
-            {
-                type: 'Streak',
-                properties: {title: 'KTVA Practice Streak', dates: this.state.practiceDates, lookback: 30},
-                gridColumn: '1 / 10',
-                gridRow: '10 / 19'
-            },
-            {
-                type: 'Streak',
-                properties: {title: 'Exercise Streak', dates: this.state.exerciseDates, lookback: 30},
-                gridColumn: '1 / 10',
-                gridRow: '19 / 28'
-            },
-            {
-                type: 'Countdown',
-                properties: {title: 'Days until TX', date: Date.parse('01 Aug 2020 00:00:00 GMT')},
-                gridColumn: '1 / 10',
-                gridRow: '28 / 37'
-            },
-            {
-                type: 'Countdown',
-                properties: {title: 'Days until haircut', date: Date.parse('30 May 2020 00:00:00 GMT')},
-                gridColumn: '1 / 10',
-                gridRow: '37 / 46'
-            },
-            {
-                type: 'DailyProgress',
-                properties: {title: 'Daily Study', width: 300, height: 10, goal: 10, unit: '%', data: this.state.studySheet, parameter: 'SUM of % Completed'},
-                gridColumn: '10 / 28',
-                gridRow: '1 / 10'
-            },
-            {
-                type: 'DailyProgress',
-                properties: {title: 'Daily Exercise', width: 300, height: 10, goal: 200, unit: 'Seconds', data: this.state.exerciseSheet, parameter: 'SUM of Time Under Tension'},
-                gridColumn: '28 / 46',
-                gridRow: '1 / 10'
-            },
-            {
-                type: 'DailyProgress',
-                properties: {title: 'Daily KTVA Practice', width: 300, height: 10, goal: 2700, unit: 'Seconds', data: this.state.practiceSheet, parameter: 'SUM of Duration'},
-                gridColumn: '46 / 74',
-                gridRow: '1 / 10'
-            }
+        const layout = [
+            {i: 'a', x: 0, y: 0, w: 2, h: 5},
+            {i: 'b', x: 0, y: 0, w: 2, h: 5},
+            {i: 'c', x: 0, y: 0, w: 2, h: 5},
+            {i: 'd', x: 0, y: 0, w: 2, h: 5},
+            {i: 'e', x: 0, y: 0, w: 2, h: 5},
+            {i: 'f', x: 2, y: 0, w: 3, h: 3},
+            {i: 'g', x: 5, y: 0, w: 3, h: 3},
+            {i: 'h', x: 8, y: 0, w: 3, h: 3},
+            {i: 'i', x: 2, y: 4, w: 5, h: 7},
+            {i: 'j', x: 7, y: 4, w: 5, h: 7},
+            {i: 'k', x: 2, y: 4, w: 5, h: 7},
+            {i: 'l', x: 7, y: 4, w: 5, h: 7},
+            {i: 'm', x: 2, y: 4, w: 5, h: 7},
+            {i: 'n', x: 7, y: 4, w: 5, h: 7}
         ];
-
-        const widgets = widgetState.map((widgetDetails, index) => {
-            let widget = null;
-            switch(widgetDetails.type) {
-                case 'Streak':
-                    widget = <Streak {...widgetDetails.properties} />;
-                    break;
-                case 'Countdown':
-                    widget = <Countdown {...widgetDetails.properties} />;
-                    break;
-                case 'DailyProgress':
-                    widget = <DailyProgress {...widgetDetails.properties} />;
-                    break;
-                default:
-                    widget = <div>Unidentified widget type</div>;
-            }
-            const position = {
-                gridColumn: widgetDetails.gridColumn,
-                gridRow: widgetDetails.gridRow
-            };
-            return (
-                <div className='widget-container' key={index} style={position}>
-                    <Draggable grid={[20, 20]}>
-                        <div style={{width: '100%', height: '100%'}}>{widget}</div>
-                    </Draggable>
-                </div>
-            )
-        });
-
-
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
-                {widgets}
+                <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1200}>
+                    <div key="a" className='widget-container'><Streak title='Study Streak' dates={this.state.studyDates} lookback={30} /></div>
+                    <div key="b" className='widget-container'><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div>
+                    <div key="c" className='widget-container'><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div>
+                    <div key="d" className='widget-container'><Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} /></div>
+                    <div key="e" className='widget-container'><Countdown title='Days until haircut' date={Date.parse('30 May 2020')} /></div>
+                    <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
+                    <div key="g" className='widget-container'><DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' /></div>
+                    <div key="h" className='widget-container'><DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' /></div>
+                    <div key="i" className='widget-container'><Pie data={this.state.exercisePieInput} /></div>
+                    <div key="j" className='widget-container'><Pie data={this.state.practicePieInput} /></div>
+                    <div key="k" className='widget-container'><Line data={this.state.weightChartInput} /></div>
+                    <div key="l" className='widget-container'><Line data={this.state.connectingChartInput} /></div>
+                    <div key="m" className='widget-container'><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div>
+                    <div key="n" className='widget-container'><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div>
+                </GridLayout>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
@@ -306,28 +259,3 @@ class Dashboard extends React.Component {
 }
 
 export default Dashboard;
-
-/*
-                <div style={{gridColumn: '1 / 2', gridRow: '1 / 5'}}>
-                </div>
-                <div className='flex-row' style={{gridColumn: '2 / 4', gridRow: '1 / 2'}}>
-                </div>
-                <div style={{gridColumn: '2 / 3', gridRow: '2 / 3'}}>
-                    <Draggable grid={[50, 50]}><div><Pie data={this.state.exercisePieInput} /></div></Draggable>
-                </div>
-                <div style={{gridColumn: '3 / 4', gridRow: '2 / 3'}}>
-                    <Draggable grid={[50, 50]}><div><Pie data={this.state.practicePieInput} /></div></Draggable>
-                </div>
-                <div style={{gridColumn: '2 / 3', gridRow: '3 / 4'}}>
-                    <Draggable grid={[50, 50]}><div><Line data={this.state.weightChartInput} /></div></Draggable>
-                </div>
-                <div style={{gridColumn: '3 / 4', gridRow: '3 / 4'}}>
-                    <Draggable grid={[50, 50]}><div><Line data={this.state.connectingChartInput} /></div></Draggable>
-                </div>
-                <div style={{gridColumn: '2 / 3', gridRow: '4 / 5'}}>
-                    <Draggable grid={[50, 50]}><div><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div></Draggable>
-                </div>
-                <div style={{gridColumn: '3 / 4', gridRow: '4 / 5'}}>
-                    <Draggable grid={[50, 50]}><div><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div></Draggable>
-                </div>
- */

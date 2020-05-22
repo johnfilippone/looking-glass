@@ -1,13 +1,7 @@
 .Countdown {
-    /* TODO parent components are dependent on this width and height; remove dependancy */
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-.Countdown:hover {
-    outline: 1px solid rgba(75,192,192,1);
 }
 .countdown-title {
     font-size: 18px;
