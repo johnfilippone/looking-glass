@@ -1,16 +1,18 @@
 import React from 'react';
-import GridLayout from 'react-grid-layout';
+import {Responsive, WidthProvider}from 'react-grid-layout';
 import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
 import DailyProgress from './DailyProgress';
 import EventList from './EventList';
-import { Line, Pie } from 'react-chartjs-2';
+import PieChart from './PieChart';
+import LineChart from './LineChart';
 import { request } from 'graphql-request';
 import './Dashboard.css';
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
 
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 class Dashboard extends React.Component {
     constructor(props) {
         super(props)
@@ -218,7 +220,7 @@ class Dashboard extends React.Component {
         const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay());
         const firstDayOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay()-7);
 
-        const layout = [
+        const layout = { lg: [
             {i: 'a', x: 0, y: 0, w: 2, h: 5},
             {i: 'b', x: 0, y: 0, w: 2, h: 5},
             {i: 'c', x: 0, y: 0, w: 2, h: 5},
@@ -227,35 +229,35 @@ class Dashboard extends React.Component {
             {i: 'f', x: 2, y: 0, w: 3, h: 3},
             {i: 'g', x: 5, y: 0, w: 3, h: 3},
             {i: 'h', x: 8, y: 0, w: 3, h: 3},
-            {i: 'i', x: 2, y: 4, w: 5, h: 7},
-            {i: 'j', x: 7, y: 4, w: 5, h: 7},
-            {i: 'k', x: 2, y: 4, w: 5, h: 7},
-            {i: 'l', x: 7, y: 4, w: 5, h: 7},
-            {i: 'm', x: 2, y: 4, w: 5, h: 7},
-            {i: 'n', x: 7, y: 4, w: 5, h: 7}
-        ];
+            {i: 'i', x: 2, y: 4, w: 4, h: 8},
+            {i: 'l', x: 6, y: 4, w: 5, h: 9},
+            {i: 'm', x: 2, y: 4, w: 4, h: 6},
+            {i: 'n', x: 2, y: 4, w: 4, h: 6}
+        ]};
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
-                <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1200}>
+                <ResponsiveReactGridLayout className="layout" layouts={layout} cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}} rowHeight={30} measureBeforeMount={true} compactType="vertical" preventCollision={false} >
                     <div key="a" className='widget-container'><Streak title='Study Streak' dates={this.state.studyDates} lookback={30} /></div>
                     <div key="b" className='widget-container'><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div>
                     <div key="c" className='widget-container'><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div>
                     <div key="d" className='widget-container'><Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} /></div>
                     <div key="e" className='widget-container'><Countdown title='Days until haircut' date={Date.parse('30 May 2020')} /></div>
-                    <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={10} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
+                    <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
                     <div key="g" className='widget-container'><DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' /></div>
                     <div key="h" className='widget-container'><DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' /></div>
-                    <div key="i" className='widget-container'><Pie data={this.state.exercisePieInput} /></div>
-                    <div key="j" className='widget-container'><Pie data={this.state.practicePieInput} /></div>
-                    <div key="k" className='widget-container'><Line data={this.state.weightChartInput} /></div>
-                    <div key="l" className='widget-container'><Line data={this.state.connectingChartInput} /></div>
+                    <div key="i" className='widget-container'><PieChart legend={{display: true}} data={this.state.exercisePieInput} /></div>
+                    <div key="l" className='widget-container'><LineChart data={this.state.connectingChartInput} /></div>
                     <div key="m" className='widget-container'><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div>
                     <div key="n" className='widget-container'><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div>
-                </GridLayout>
+                </ResponsiveReactGridLayout>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
     }
 }
+/*
+                    <div key="j" className='widget-container'><Pie legend={{display: false}} data={this.state.practicePieInput} /></div>
+                    <div key="k" className='widget-container'><Line data={this.state.weightChartInput} /></div>
+*/
 
 export default Dashboard;

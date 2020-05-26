@@ -5,6 +5,9 @@
     font-size: calc(10px + 2vmin);
     color: white;
 }
+.widget-container {
+    overflow: auto;
+}
 .widget-container:hover {
     outline: 1px solid rgba(75,192,192,1);
 }
