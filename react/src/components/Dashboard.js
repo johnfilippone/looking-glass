@@ -30,7 +30,6 @@ class Dashboard extends React.Component {
             studyData: [],
             practiceData: [],
             exerciseData: [],
-            weightChartInput: {},
             connectingChartInput: {},
             exercisePieInput: {},
             practicePieInput: {},
@@ -49,36 +48,28 @@ class Dashboard extends React.Component {
 
     async componentDidMount() {
         let promises = [
-            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume'),
             this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log Pivot'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log Pivot'),
             this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Exercise Log Pivot'),
             this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Week Pivot'),
-            this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Week Pivot'),
             this.getSheet('1OArbMSXtJAsGGWvl_1V7u2lwUncutERJ-TArYZmmExc', 'Events')
         ];
         Promise.all(promises).then((sheets) => {
-            const weightSheet = sheets[0].sheets;
-            const weightDates = weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return data[0]; });
-            //const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return parseFloat(data[1]); })};
-            const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data) => { return data[2]; }).map((data) => { return parseFloat(data[2]); })};
-            const weightChartInput = this.buildLineChartInput(weightDates, [weightAvgLine]);
-
-            const connectingData = sheets[1].sheets;
+            const connectingData = sheets[0].sheets;
             const connectingDates = connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return data[0]; });
             const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[8]); })};
             const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[7]); })};
             const connectingChartInput = this.buildLineChartInput(connectingDates, [maxLine, avgLine]);
 
-            const studySheet = sheets[2].sheets;
+            const studySheet = sheets[1].sheets;
             const studyDates = studySheet.map((entry) => { return entry[0]; });
-            const practiceSheet = sheets[3].sheets;
+            const practiceSheet = sheets[2].sheets;
             const practiceDates = practiceSheet.map((entry) => { return entry[0]; });
-            const exerciseSheet = sheets[4].sheets;
+            const exerciseSheet = sheets[3].sheets;
             const exerciseDates = exerciseSheet.map((entry) => { return entry[0]; });
 
-            const exerciseWeekSheet = sheets[5].sheets;
+            const exerciseWeekSheet = sheets[4].sheets;
             const exerciseWeekData = exerciseWeekSheet.slice(1, exerciseWeekSheet.length-1);
             const exercisePieLabels = exerciseWeekData.map((entry) => { return entry[0]; });
             const exercisePieData = exerciseWeekData.map((entry) => {
@@ -87,15 +78,6 @@ class Dashboard extends React.Component {
             });
             const exercisePieInput = this.buildPieChartInput(exercisePieLabels, exercisePieData);
 
-            const practiceWeekSheet = sheets[6].sheets;
-            const practiceWeekData = practiceWeekSheet.slice(1, practiceWeekSheet.length-1);
-            const practicePieLabels = practiceWeekData.map((entry) => { return entry[0]; });
-            const practicePieData = practiceWeekData.map((entry) => {
-                const components = entry[1].split(':');
-                return (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
-            });
-            const practicePieInput = this.buildPieChartInput(practicePieLabels, practicePieData);
-
             this.setState({
                 studySheet,
                 exerciseSheet,
@@ -103,11 +85,9 @@ class Dashboard extends React.Component {
                 studyDates,
                 exerciseDates,
                 practiceDates,
-                weightChartInput,
                 connectingChartInput,
                 exercisePieInput,
-                practicePieInput,
-                eventsData: sheets[7].sheets
+                eventsData: sheets[5].sheets
             });
         });
     }
@@ -255,9 +235,5 @@ class Dashboard extends React.Component {
         )
     }
 }
-/*
-                    <div key="j" className='widget-container'><Pie legend={{display: false}} data={this.state.practicePieInput} /></div>
-                    <div key="k" className='widget-container'><Line data={this.state.weightChartInput} /></div>
-*/
 
 export default Dashboard;
