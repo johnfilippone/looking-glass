@@ -30,6 +30,7 @@ class Dashboard extends React.Component {
             studyData: [],
             practiceData: [],
             exerciseData: [],
+            weightChartInput: {},
             connectingChartInput: {},
             exercisePieInput: {},
             practicePieInput: {},
@@ -48,6 +49,7 @@ class Dashboard extends React.Component {
 
     async componentDidMount() {
         let promises = [
+            this.getSheet('1DRXq0Uo_eVzgnT4bwo202XAU9YWltCa_8W26jhEaaxQ', 'Metrics'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Connecting Volume'),
             this.getSheet('1fvxCxuE0Rg67YpsYkvVxY-qjm_5gZVVTo5NvMEo22TE', 'Study Log Pivot'),
             this.getSheet('1ucWB8jjQIYJa_K4K0NsDA9owCeWYs1buClTVvE2JqJw', 'Practice Log Pivot'),
@@ -56,20 +58,26 @@ class Dashboard extends React.Component {
             this.getSheet('1OArbMSXtJAsGGWvl_1V7u2lwUncutERJ-TArYZmmExc', 'Events')
         ];
         Promise.all(promises).then((sheets) => {
-            const connectingData = sheets[0].sheets;
+            const weightSheet = sheets[0].sheets;
+            const weightDates = weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return data[0]; });
+            //const weightLine = {label: 'Body Weight (lbs)', data: weightSheet.slice(3).filter((data) => { return data[1]; }).map((data) => { return parseFloat(data[1]); })};
+            const weightAvgLine = {label: 'Trend (lbs)', data: weightSheet.slice(3).filter((data) => { return data[2]; }).map((data) => { return parseFloat(data[2]); })};
+            const weightChartInput = this.buildLineChartInput(weightDates, [weightAvgLine]);
+
+            const connectingData = sheets[1].sheets;
             const connectingDates = connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return data[0]; });
             const maxLine = {label: 'Max dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[8]); })};
             const avgLine = {label: 'Avg dbs', data: connectingData.slice(1).filter((data) => { return data[7] && data[8]; }).map((data) => { return parseFloat(data[7]); })};
             const connectingChartInput = this.buildLineChartInput(connectingDates, [maxLine, avgLine]);
 
-            const studySheet = sheets[1].sheets;
+            const studySheet = sheets[2].sheets;
             const studyDates = studySheet.map((entry) => { return entry[0]; });
-            const practiceSheet = sheets[2].sheets;
+            const practiceSheet = sheets[3].sheets;
             const practiceDates = practiceSheet.map((entry) => { return entry[0]; });
-            const exerciseSheet = sheets[3].sheets;
+            const exerciseSheet = sheets[4].sheets;
             const exerciseDates = exerciseSheet.map((entry) => { return entry[0]; });
 
-            const exerciseWeekSheet = sheets[4].sheets;
+            const exerciseWeekSheet = sheets[5].sheets;
             const exerciseWeekData = exerciseWeekSheet.slice(1, exerciseWeekSheet.length-1);
             const exercisePieLabels = exerciseWeekData.map((entry) => { return entry[0]; });
             const exercisePieData = exerciseWeekData.map((entry) => {
@@ -85,9 +93,10 @@ class Dashboard extends React.Component {
                 studyDates,
                 exerciseDates,
                 practiceDates,
+                weightChartInput,
                 connectingChartInput,
                 exercisePieInput,
-                eventsData: sheets[5].sheets
+                eventsData: sheets[6].sheets
             });
         });
     }
@@ -210,12 +219,11 @@ class Dashboard extends React.Component {
             {i: 'f', x: 2, y: 0, w: 3, h: 3},
             {i: 'g', x: 5, y: 0, w: 3, h: 3},
             {i: 'h', x: 8, y: 0, w: 3, h: 3},
-            {i: 'i', x: 2, y: 4, w: 4, h: 9},
-            {i: 'j', x: 6, y: 4, w: 5, h: 9},
-            {i: 'k', x: 2, y: 4, w: 4, h: 6},
-            {i: 'l', x: 2, y: 4, w: 4, h: 6},
-            {i: 'm', x: 6, y: 4, w: 4, h: 6},
-            {i: 'n', x: 6, y: 4, w: 4, h: 6}
+            {i: 'i', x: 2, y: 4, w: 5, h: 9},
+            {i: 'j', x: 2, y: 9, w: 5, h: 9},
+            {i: 'k', x: 7, y: 4, w: 3, h: 7},
+            {i: 'l', x: 7, y: 4, w: 4, h: 6},
+            {i: 'm', x: 7, y: 4, w: 4, h: 6}
         ]};
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
@@ -227,12 +235,11 @@ class Dashboard extends React.Component {
                     <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
                     <div key="g" className='widget-container'><DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' /></div>
                     <div key="h" className='widget-container'><DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' /></div>
-                    <div key="i" className='widget-container'><PieChart legend={{display: true}} data={this.state.exercisePieInput} /></div>
-                    <div key="j" className='widget-container'><LineChart data={this.state.connectingChartInput} /></div>
-                    <div key="k" className='widget-container'><EventList title='Last Month' data={this.state.eventsData} significance={3} startDate={firstDayOfLastMonth} endDate={firstDayOfMonth} /></div>
-                    <div key="l" className='widget-container'><EventList title='This Month' data={this.state.eventsData} significance={3} startDate={firstDayOfMonth} endDate={tomorrow} /></div>
-                    <div key="m" className='widget-container'><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div>
-                    <div key="n" className='widget-container'><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div>
+                    <div key="i" className='widget-container'><LineChart data={this.state.connectingChartInput} /></div>
+                    <div key="j" className='widget-container'><LineChart data={this.state.weightChartInput} /></div>
+                    <div key="k" className='widget-container'><PieChart legend={{display: true}} data={this.state.exercisePieInput} /></div>
+                    <div key="l" className='widget-container'><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div>
+                    <div key="m" className='widget-container'><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div>
                 </ResponsiveReactGridLayout>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
