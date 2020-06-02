@@ -1,7 +1,6 @@
 import React from 'react';
 import './Streak.css';
 
-// TODO add condition; right now it counts toward the streak as long as there is any entry for the date
 // expects dates to be sorted in decending order and to not have date duplicates
 function Streak(props) {
     let streak = 0;
@@ -14,16 +13,16 @@ function Streak(props) {
         return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth() && first.getDate() === second.getDate();
     };
 
-    for (let i = 0; i < props.dates.length; i++) {
+    for (let i = 0; i < props.data.length; i++) {
         // Make sure we are looking at a date before today
-        const dateEntry = new Date(props.dates[i]);
+        const dateEntry = new Date(props.data[i][0]);
         if (!dateEntry || dateEntry.toString() === 'Invalid Date' || dateEntry > currentDay) continue;
 
         // Stop looking if we already reached the max lookback days
         if (lookbackCount >= props.lookback) break;
         lookbackCount++;
 
-        if (datesAreOnSameDay(dateEntry, currentDay)) {
+        if (datesAreOnSameDay(dateEntry, currentDay) && props.condition(props.data[i])) {
             if (activeStreak) streak++;
             lookbackNumerator++;
         } else {

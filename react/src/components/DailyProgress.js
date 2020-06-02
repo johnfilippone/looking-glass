@@ -1,5 +1,6 @@
 import React from 'react';
 import './DailyProgress.css';
+import { durationStringToSeconds } from '../utils/utils';
 
 function DailyProgress(props) {
     let valueString = '';
@@ -10,12 +11,10 @@ function DailyProgress(props) {
         const formattedDate = today.getMonth() + 1 + '/' + today.getDate() + '/' + today.getFullYear();
         for (let i = 0; i < props.data.length; i++) {
             const rowLabel = props.data[i][0];
-            if (rowLabel !== formattedDate + ' Total') continue;
+            if (rowLabel !== formattedDate) continue;
             valueString = props.data[i][parameterIndex];
-            // TODO make this conversion a utility function (may not be needed if using a database)
             if (valueString.split(':').length === 3) {
-                const components = valueString.split(':');
-                value = (+components[0]) * 60 * 60 + (+components[1]) * 60 + (+components[2]);
+                value = durationStringToSeconds(valueString);
             } else {
                 value = parseFloat(valueString.replace('$', '').replace('%', ''));
             }

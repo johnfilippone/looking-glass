@@ -11,6 +11,7 @@ import { request } from 'graphql-request';
 import './Dashboard.css';
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
+import { durationStringToSeconds } from '../utils/utils';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 class Dashboard extends React.Component {
@@ -22,18 +23,9 @@ class Dashboard extends React.Component {
             studySheet: [],
             exerciseSheet: [],
             practiceSheet: [],
-            studyDates: [],
-            exerciseDates: [],
-            practiceDates: [],
-            weightData: [],
-            connectingData: [],
-            studyData: [],
-            practiceData: [],
-            exerciseData: [],
             weightChartInput: {},
             connectingChartInput: {},
             exercisePieInput: {},
-            practicePieInput: {},
             eventsData: []
         };
 
@@ -71,11 +63,8 @@ class Dashboard extends React.Component {
             const connectingChartInput = this.buildLineChartInput(connectingDates, [maxLine, avgLine]);
 
             const studySheet = sheets[2].sheets;
-            const studyDates = studySheet.map((entry) => { return entry[0]; });
             const practiceSheet = sheets[3].sheets;
-            const practiceDates = practiceSheet.map((entry) => { return entry[0]; });
             const exerciseSheet = sheets[4].sheets;
-            const exerciseDates = exerciseSheet.map((entry) => { return entry[0]; });
 
             const exerciseWeekSheet = sheets[5].sheets;
             const exerciseWeekData = exerciseWeekSheet.slice(1, exerciseWeekSheet.length-1);
@@ -90,9 +79,6 @@ class Dashboard extends React.Component {
                 studySheet,
                 exerciseSheet,
                 practiceSheet,
-                studyDates,
-                exerciseDates,
-                practiceDates,
                 weightChartInput,
                 connectingChartInput,
                 exercisePieInput,
@@ -221,16 +207,16 @@ class Dashboard extends React.Component {
             {i: 'h', x: 8, y: 0, w: 3, h: 3},
             {i: 'i', x: 2, y: 4, w: 5, h: 9},
             {i: 'j', x: 2, y: 9, w: 5, h: 9},
-            {i: 'k', x: 7, y: 4, w: 3, h: 7},
+            {i: 'k', x: 7, y: 4, w: 4, h: 8},
             {i: 'l', x: 7, y: 4, w: 4, h: 6},
             {i: 'm', x: 7, y: 4, w: 4, h: 6}
         ]};
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
                 <ResponsiveReactGridLayout className="layout" layouts={layout} cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}} rowHeight={30} measureBeforeMount={true} compactType="vertical" preventCollision={false} >
-                    <div key="a" className='widget-container'><Streak title='Study Streak' dates={this.state.studyDates} lookback={30} /></div>
-                    <div key="b" className='widget-container'><Streak title='KTVA Practice Streak' dates={this.state.practiceDates} lookback={30} /></div>
-                    <div key="c" className='widget-container'><Streak title='Exercise Streak' dates={this.state.exerciseDates} lookback={30} /></div>
+                    <div key="a" className='widget-container'><Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={30} /></div>
+                    <div key="b" className='widget-container'><Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={30} /></div>
+                    <div key="c" className='widget-container'><Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={30} /></div>
                     <div key="d" className='widget-container'><Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} /></div>
                     <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
                     <div key="g" className='widget-container'><DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' /></div>
