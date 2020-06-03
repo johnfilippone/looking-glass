@@ -11,13 +11,16 @@ import { request } from 'graphql-request';
 import './Dashboard.css';
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
-import { durationStringToSeconds } from '../utils/utils';
+import { durationStringToSeconds, getFromLS, saveToLS } from '../utils/utils';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const originalLayouts = getFromLS("layouts") || {};
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            layouts: JSON.parse(JSON.stringify(originalLayouts)),
             contextMenuActive: false,
             contextMenuClickPosition: { xPosition: 0, yPosition: 0 },
             studySheet: [],
@@ -29,6 +32,7 @@ class Dashboard extends React.Component {
             eventsData: []
         };
 
+        this.onLayoutChange = this.onLayoutChange.bind(this);
         this.toggleContextMenuOn = this.toggleContextMenuOn.bind(this);
         this.toggleContextMenuOff = this.toggleContextMenuOff.bind(this);
         this.clickListener = this.clickListener.bind(this);
@@ -89,6 +93,11 @@ class Dashboard extends React.Component {
 
     async getSheet(spreadsheetId, range) {
         return request('http://localhost:4000/graphql', `{ sheets(spreadsheetId:"${spreadsheetId}", range:"${range}") }`);
+    }
+
+    onLayoutChange(layout, layouts) {
+        saveToLS("layouts", layouts);
+        this.setState({ layouts });
     }
 
     toggleContextMenuOn(e) {
@@ -197,35 +206,57 @@ class Dashboard extends React.Component {
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth()-1, 1);
 
-        const layout = { lg: [
-            {i: 'a', x: 0, y: 0, w: 2, h: 5},
-            {i: 'b', x: 0, y: 5, w: 2, h: 5},
-            {i: 'c', x: 0, y: 10, w: 2, h: 5},
-            {i: 'd', x: 0, y: 15, w: 2, h: 5},
-            {i: 'f', x: 2, y: 0, w: 3, h: 3},
-            {i: 'g', x: 5, y: 0, w: 3, h: 3},
-            {i: 'h', x: 8, y: 0, w: 3, h: 3},
-            {i: 'i', x: 2, y: 4, w: 5, h: 9},
-            {i: 'j', x: 2, y: 9, w: 5, h: 9},
-            {i: 'k', x: 7, y: 4, w: 4, h: 8},
-            {i: 'l', x: 7, y: 4, w: 4, h: 6},
-            {i: 'm', x: 7, y: 4, w: 4, h: 6}
-        ]};
+        console.log(this.state.layouts);
         return (
             <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
-                <ResponsiveReactGridLayout className="layout" layouts={layout} cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}} rowHeight={30} measureBeforeMount={true} compactType="vertical" preventCollision={false} >
-                    <div key="a" className='widget-container'><Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={30} /></div>
-                    <div key="b" className='widget-container'><Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={30} /></div>
-                    <div key="c" className='widget-container'><Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={30} /></div>
-                    <div key="d" className='widget-container'><Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} /></div>
-                    <div key="f" className='widget-container'><DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' /></div>
-                    <div key="g" className='widget-container'><DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' /></div>
-                    <div key="h" className='widget-container'><DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' /></div>
-                    <div key="i" className='widget-container'><LineChart data={this.state.connectingChartInput} /></div>
-                    <div key="j" className='widget-container'><LineChart data={this.state.weightChartInput} /></div>
-                    <div key="k" className='widget-container'><PieChart legend={{display: true}} data={this.state.exercisePieInput} /></div>
-                    <div key="l" className='widget-container'><EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} /></div>
-                    <div key="m" className='widget-container'><EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} /></div>
+                <ResponsiveReactGridLayout
+                    className="layout"
+                    layouts={this.state.layouts}
+                    cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
+                    rowHeight={30}
+                    measureBeforeMount={true}
+                    compactType="vertical"
+                    preventCollision={false}
+                    onLayoutChange={(layout, layouts) =>
+                        this.onLayoutChange(layout, layouts)
+                    }
+                >
+                    <div key="1" data-grid={{x: 0, y: 0, w: 2, h: 5}} className='widget-container'>
+                        <Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={30} />
+                    </div>
+                    <div key="2" data-grid={{x: 0, y: 5, w: 2, h: 5}} className='widget-container'>
+                        <Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={30} />
+                    </div>
+                    <div key="3" data-grid={{x: 0, y: 10, w: 2, h: 5}} className='widget-container'>
+                        <Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={30} />
+                    </div>
+                    <div key="4" data-grid={{x: 0, y: 15, w: 2, h: 5}} className='widget-container'>
+                        <Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} />
+                    </div>
+                    <div key="5" data-grid={{x: 2, y: 0, w: 3, h: 3}} className='widget-container'>
+                        <DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' />
+                    </div>
+                    <div key="6" data-grid={{x: 5, y: 0, w: 3, h: 3}} className='widget-container'>
+                        <DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' />
+                    </div>
+                    <div key="7" data-grid={{x: 8, y: 0, w: 3, h: 3}} className='widget-container'>
+                        <DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' />
+                    </div>
+                    <div key="8" data-grid={{x: 2, y: 4, w: 5, h: 9}} className='widget-container'>
+                        <LineChart data={this.state.connectingChartInput} />
+                    </div>
+                    <div key="9" data-grid={{x: 2, y: 9, w: 5, h: 9}} className='widget-container'>
+                        <LineChart data={this.state.weightChartInput} />
+                    </div>
+                    <div key="10" data-grid={{x: 7, y: 4, w: 4, h: 8}} className='widget-container'>
+                        <PieChart legend={{display: true}} data={this.state.exercisePieInput} />
+                    </div>
+                    <div key="11" data-grid={{x: 7, y: 4, w: 4, h: 6}} className='widget-container'>
+                        <EventList title='Last Week' data={this.state.eventsData} significance={2} startDate={firstDayOfLastWeek} endDate={firstDayOfWeek} />
+                    </div>
+                    <div key="12" data-grid={{x: 7, y: 4, w: 4, h: 6}} className='widget-container'>
+                        <EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} />
+                    </div>
                 </ResponsiveReactGridLayout>
                 <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>

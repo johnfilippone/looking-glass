@@ -33,7 +33,7 @@ class GraphQLService {
         app.use(morgan('combined'));
         graphQLServer.applyMiddleware({ app });
         app.listen({ port: this._config.port }, () => {
-            this._logger.info('Serving graphql at http://localhost:4000' + graphQLServer.graphqlPath)
+            this._logger.info('Serving graphql at http://localhost:' + this._config.port + graphQLServer.graphqlPath)
             this._sheetsService.connect();
         });
     }
