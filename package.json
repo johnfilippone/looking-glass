@@ -22,6 +22,7 @@
     "googleapis": "^39.2.0",
     "graphql": "^15.0.0",
     "js-yaml": "^3.13.1",
+    "mongodb": "^3.5.8",
     "morgan": "^1.10.0",
     "winston": "^3.2.1"
   },

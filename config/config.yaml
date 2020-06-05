@@ -3,3 +3,7 @@ graphql:
 sheets:
     credentialsPath: config/sheets/credentials.json
     tokenPath: config/sheets/token.json
+database:
+    dbType: mongodb
+    dbName: dev
+    connectionString:
