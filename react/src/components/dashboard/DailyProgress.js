@@ -1,6 +1,6 @@
 import React from 'react';
 import './DailyProgress.css';
-import { durationStringToSeconds } from '../utils/utils';
+import { durationStringToSeconds } from '../../utils/utils';
 
 function DailyProgress(props) {
     let valueString = '';

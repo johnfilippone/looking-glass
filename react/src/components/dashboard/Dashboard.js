@@ -1,6 +1,5 @@
 import React from 'react';
 import {Responsive, WidthProvider}from 'react-grid-layout';
-import ContextMenu from './ContextMenu';
 import Countdown from './Countdown';
 import Streak from './Streak';
 import DailyProgress from './DailyProgress';
@@ -8,10 +7,10 @@ import EventList from './EventList';
 import PieChart from './PieChart';
 import LineChart from './LineChart';
 import { request } from 'graphql-request';
+import { durationStringToSeconds, getFromLS, saveToLS } from '../../utils/utils';
 import './Dashboard.css';
-import "../../node_modules/react-grid-layout/css/styles.css";
-import "../../node_modules/react-resizable/css/styles.css";
-import { durationStringToSeconds, getFromLS, saveToLS } from '../utils/utils';
+import "../../../node_modules/react-grid-layout/css/styles.css";
+import "../../../node_modules/react-resizable/css/styles.css";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 const originalLayouts = getFromLS("layouts") || {};
@@ -21,8 +20,6 @@ class Dashboard extends React.Component {
         super(props)
         this.state = {
             layouts: JSON.parse(JSON.stringify(originalLayouts)),
-            contextMenuActive: false,
-            contextMenuClickPosition: { xPosition: 0, yPosition: 0 },
             studySheet: [],
             exerciseSheet: [],
             practiceSheet: [],
@@ -33,11 +30,6 @@ class Dashboard extends React.Component {
         };
 
         this.onLayoutChange = this.onLayoutChange.bind(this);
-        this.toggleContextMenuOn = this.toggleContextMenuOn.bind(this);
-        this.toggleContextMenuOff = this.toggleContextMenuOff.bind(this);
-        this.clickListener = this.clickListener.bind(this);
-        this.clickInsideElement = this.clickInsideElement.bind(this);
-        this.getClickPosition = this.getClickPosition.bind(this);
         this.getSheet = this.getSheet.bind(this);
         this.buildLineChartInput = this.buildLineChartInput.bind(this);
         this.buildPieChartInput = this.buildPieChartInput.bind(this);
@@ -100,63 +92,6 @@ class Dashboard extends React.Component {
         this.setState({ layouts });
     }
 
-    toggleContextMenuOn(e) {
-        e.preventDefault();
-        this.setState({
-            contextMenuActive: true,
-            contextMenuClickPosition: this.getClickPosition(e)
-        });
-    }
-
-    toggleContextMenuOff(e) {
-        e.preventDefault();
-        this.setState({
-            contextMenuActive: false
-        });
-    }
-
-    clickListener(e) {
-        if (this.state.contextMenuActive) {
-            if (this.clickInsideElement(e, 'ContextMenu')) {
-                // handle menu links
-            } else {
-                e.preventDefault();
-                this.toggleContextMenuOff(e);
-            }
-        }
-    }
-
-    clickInsideElement(e, className) {
-        var el = e.srcElement || e.target;
-        if ( el.classList.contains(className) ) {
-            return el;
-        } else {
-            while (el = el.parentNode) {
-                if ( el.classList && el.classList.contains(className) ) {
-                    return el;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    getClickPosition(e) {
-        let posx = 0;
-        let posy = 0;
-        if (e.pageX || e.pageY) {
-            posx = e.pageX;
-            posy = e.pageY;
-        } else if (e.clientX || e.clientY) {
-            posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-            posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-        }
-        return {
-            xPosition: posx,
-            yPosition: posy
-        };
-    }
-
     buildLineChartInput(xValues, lines) {
         return {
             labels: xValues,
@@ -206,9 +141,8 @@ class Dashboard extends React.Component {
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth()-1, 1);
 
-        console.log(this.state.layouts);
         return (
-            <div className='Dashboard' onClick={this.clickListener} onContextMenu={this.toggleContextMenuOn}>
+            <div className='Dashboard' onClick={this.props.clickListener} onContextMenu={this.props.toggleContextMenuOn}>
                 <ResponsiveReactGridLayout
                     className="layout"
                     layouts={this.state.layouts}
@@ -258,7 +192,6 @@ class Dashboard extends React.Component {
                         <EventList title='This Week' data={this.state.eventsData} significance={2} startDate={firstDayOfWeek} endDate={tomorrow} />
                     </div>
                 </ResponsiveReactGridLayout>
-                <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
             </div>
         )
     }

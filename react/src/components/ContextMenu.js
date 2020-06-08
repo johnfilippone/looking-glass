@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import './ContextMenu.css';
 
 function ContextMenu(props) {
@@ -44,8 +45,8 @@ function ContextMenu(props) {
     return (
         <div id="context-menu" className={'ContextMenu'} style={menuStyle}>
             <ul>
-                <li>Create</li>
-                <li>Data Sets</li>
+                <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
+                <li><NavLink to='/webs'>Research Webs</NavLink></li>
             </ul>
         </div>
     );
