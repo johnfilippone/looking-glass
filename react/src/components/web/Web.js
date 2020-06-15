@@ -1,5 +1,4 @@
 import React from 'react';
-import ContextMenu from '../ContextMenu';
 import './Web.css';
 
 function Web(props) {

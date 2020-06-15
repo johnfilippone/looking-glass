@@ -47,6 +47,7 @@ function ContextMenu(props) {
             <ul>
                 <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
                 <li><NavLink to='/webs'>Research Webs</NavLink></li>
+                <li><NavLink to='/datasets'>Datasets</NavLink></li>
             </ul>
         </div>
     );

@@ -138,8 +138,6 @@ class Dashboard extends React.Component {
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
         const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay());
         const firstDayOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate()-now.getDay()-7);
-        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth()-1, 1);
 
         return (
             <div className='Dashboard' onClick={this.props.clickListener} onContextMenu={this.props.toggleContextMenuOn}>

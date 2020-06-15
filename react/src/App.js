@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import ContextMenu from './components/ContextMenu';
 import Dashboard from './components/dashboard/Dashboard';
 import Web from './components/web/Web';
+import Datasets from './components/datasets/Datasets';
 import './App.css';
 
 class App extends React.Component {
@@ -50,7 +51,8 @@ class App extends React.Component {
         if ( el.classList.contains(className) ) {
             return el;
         } else {
-            while (el = el.parentNode) {
+            while (el.parentNode) {
+                el = el.parentNode;
                 if ( el.classList && el.classList.contains(className) ) {
                     return el;
                 }
@@ -82,6 +84,7 @@ class App extends React.Component {
                         <Redirect path='/' to='/dashboard' exact />
                         <Route path='/dashboard' render={() => <Dashboard clickListener={this.clickListener} toggleContextMenuOn={this.toggleContextMenuOn} /> } />
                         <Route path='/webs' render={() => <Web clickListener={this.clickListener} toggleContextMenuOn={this.toggleContextMenuOn} /> } />
+                        <Route path='/datasets' render={() => <Datasets clickListener={this.clickListener} toggleContextMenuOn={this.toggleContextMenuOn} /> } />
                     </Switch>
                     <ContextMenu active={this.state.contextMenuActive} clickPosition={this.state.contextMenuClickPosition} />
                 </BrowserRouter>

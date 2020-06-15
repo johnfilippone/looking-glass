@@ -28,12 +28,16 @@ class GraphQLService {
         const typeDefs = gql`
             type Query {
                 sheets(spreadsheetId: String!, range: String!): [[String!]!]
+                datasets: [String!]
             }
         `;
         const resolvers = {
             Query: {
                 sheets: async (obj, args) => {
                     return await this._sheetsService.getSheet(args.spreadsheetId, args.range);
+                },
+                datasets: async (obj, args) => {
+                    return ['Health Metics', 'Practice Log'];
                 }
             },
         };
