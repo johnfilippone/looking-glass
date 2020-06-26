@@ -8,7 +8,7 @@ function Streak(props) {
     let lookbackNumerator = 0;
     let lookbackCount = 0;
     let currentDay = new Date();
-    currentDay.setDate(currentDay.getDate() - 1);
+    currentDay.setDate(currentDay.getDate());
     const datesAreOnSameDay = (first, second) => {
         return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth() && first.getDate() === second.getDate();
     };
@@ -18,18 +18,22 @@ function Streak(props) {
         const dateEntry = new Date(props.data[i][0]);
         if (!dateEntry || dateEntry.toString() === 'Invalid Date' || dateEntry > currentDay) continue;
 
+        // Update the current day until it equals the entry we are looking at
+        while (!datesAreOnSameDay(dateEntry, currentDay)) {
+            currentDay.setDate(currentDay.getDate() - 1);
+            lookbackCount++;
+        }
+
         // Stop looking if we already reached the max lookback days
         if (lookbackCount >= props.lookback) break;
-        lookbackCount++;
 
-        if (datesAreOnSameDay(dateEntry, currentDay) && props.condition(props.data[i])) {
+        if (props.condition(props.data[i])) {
             if (activeStreak) streak++;
             lookbackNumerator++;
         } else {
             activeStreak = false;
         }
 
-        currentDay.setDate(currentDay.getDate() - 1);
     }
 
     return (

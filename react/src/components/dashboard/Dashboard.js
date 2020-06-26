@@ -154,13 +154,13 @@ class Dashboard extends React.Component {
                     }
                 >
                     <div key="1" data-grid={{x: 0, y: 0, w: 2, h: 5}} className='widget-container'>
-                        <Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={45} />
+                        <Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={100} />
                     </div>
                     <div key="2" data-grid={{x: 0, y: 5, w: 2, h: 5}} className='widget-container'>
-                        <Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={45} />
+                        <Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={100} />
                     </div>
                     <div key="3" data-grid={{x: 0, y: 10, w: 2, h: 5}} className='widget-container'>
-                        <Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={45} />
+                        <Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={100} />
                     </div>
                     <div key="4" data-grid={{x: 0, y: 15, w: 2, h: 5}} className='widget-container'>
                         <Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} />

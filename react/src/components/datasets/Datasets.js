@@ -35,6 +35,7 @@ class Datasets extends React.Component {
                         <th>Description</th>
                     </tr>
                     {listItems}
+                    <tr>Add Dataset</tr>
                 </table>
             </div>
         );
