@@ -154,10 +154,10 @@ class Dashboard extends React.Component {
                     }
                 >
                     <div key="1" data-grid={{x: 0, y: 0, w: 2, h: 5}} className='widget-container'>
-                        <Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 14.29; }} lookback={100} />
+                        <Streak title='Study Streak' data={this.state.studySheet} condition={(data) => { return parseFloat(data[1].replace('%', '')) >= 3.58; }} lookback={100} />
                     </div>
                     <div key="2" data-grid={{x: 0, y: 5, w: 2, h: 5}} className='widget-container'>
-                        <Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 2700; }} lookback={100} />
+                        <Streak title='KTVA Practice Streak' data={this.state.practiceSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 1800; }} lookback={100} />
                     </div>
                     <div key="3" data-grid={{x: 0, y: 10, w: 2, h: 5}} className='widget-container'>
                         <Streak title='Exercise Streak' data={this.state.exerciseSheet} condition={(data) => { return durationStringToSeconds(data[1]) >= 200; }} lookback={100} />
@@ -166,10 +166,10 @@ class Dashboard extends React.Component {
                         <Countdown title='Days until TX' date={Date.parse('24 Jul 2020')} />
                     </div>
                     <div key="5" data-grid={{x: 2, y: 0, w: 3, h: 3}} className='widget-container'>
-                        <DailyProgress title='Daily Study' width={250} height={10} goal={14.29} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' />
+                        <DailyProgress title='Daily Study' width={250} height={10} goal={3.58} unit='%' data={this.state.studySheet} parameter='SUM of % Completed' />
                     </div>
                     <div key="6" data-grid={{x: 5, y: 0, w: 3, h: 3}} className='widget-container'>
-                        <DailyProgress title='Daily Exercise' width={250} height={10} goal={200} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' />
+                        <DailyProgress title='Daily Exercise' width={250} height={10} goal={250} unit='Seconds' data={this.state.exerciseSheet} parameter='SUM of Time Under Tension' />
                     </div>
                     <div key="7" data-grid={{x: 8, y: 0, w: 3, h: 3}} className='widget-container'>
                         <DailyProgress title='Daily KTVA Practice' width={250} height={10} goal={2700} unit='Seconds' data={this.state.practiceSheet} parameter='SUM of Duration' />

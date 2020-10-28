@@ -22,13 +22,16 @@ function Streak(props) {
         console.log(dateEntry);
         console.log(currentDay);
         if (dateEntry > currentDay) continue;
+        console.log('current day <= date entry');
 
         // Update the current day until it equals the entry we are looking at
         while (!datesAreOnSameDay(dateEntry, currentDay)) {
+            console.log('dates not on same day');
             activeStreak = false;
             currentDay.setDate(currentDay.getDate() - 1);
             lookbackCount++;
         }
+        console.log(lookbackCount);
         currentDay.setDate(currentDay.getDate() - 1);
 
         // Stop looking if we already reached the max lookback days
@@ -40,6 +43,7 @@ function Streak(props) {
         } else {
             activeStreak = false;
         }
+        lookbackCount++;
 
     }
 
